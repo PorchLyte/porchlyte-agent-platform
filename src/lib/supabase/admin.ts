@@ -1,4 +1,5 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "./types";
 
 /**
  * Service-role Supabase client for trusted server-only contexts:
@@ -9,9 +10,11 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
  * to the browser. Server-side only.
  */
 export function createAdminClient() {
-  return createSupabaseClient(
+  return createSupabaseClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    // New-format secret key (sb_secret_...), with the legacy service-role JWT
+    // as fallback. Both carry service-role privileges.
+    (process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY)!,
     {
       auth: {
         autoRefreshToken: false,
