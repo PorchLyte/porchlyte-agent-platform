@@ -104,14 +104,20 @@ export async function getFoundations(db: Db, memberId: string) {
   await requireMember(db, memberId, "read");
   const { data, error } = await db
     .from("profiles")
-    .select("kind, content, status, updated_at, updated_by")
+    .select("kind, content, status, interview_answers, updated_at, updated_by")
     .eq("member_id", memberId);
   if (error) throw error;
 
   logUsage(db, memberId, "profile_read", null, { scope: "foundations" });
 
   const byKind = new Map(data.map((row) => [row.kind, row]));
-  const empty = { content: null, status: "empty", updated_at: null, updated_by: null };
+  const empty = {
+    content: null,
+    status: "empty",
+    interview_answers: null,
+    updated_at: null,
+    updated_by: null,
+  };
   return {
     voice: byKind.get("voice") ?? empty,
     brand: byKind.get("brand") ?? empty,
