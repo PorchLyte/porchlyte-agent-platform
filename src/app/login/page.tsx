@@ -37,7 +37,7 @@ function LoginForm() {
           <div className="pl-brand-mark" style={{ fontSize: 26 }}>
             PorchLyte
           </div>
-          <div className="pl-brand-sub">Member Hub</div>
+          <div className="pl-brand-sub">AI Agent Hub</div>
         </div>
         <form onSubmit={onSubmit}>
           <div className="pl-field">
@@ -70,7 +70,8 @@ function LoginForm() {
           {error && <p className="pl-error">{error}</p>}
         </form>
         <p style={{ marginTop: 18, fontSize: 12.5, color: "var(--text-soft)" }}>
-          Members normally reach the Hub from inside their PorchLyte course area.
+          Members normally reach the AI Agent Hub from inside their PorchLyte
+          course area.
           This page is for direct access and connecting Claude.
         </p>
       </div>

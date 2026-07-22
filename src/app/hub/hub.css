@@ -467,6 +467,105 @@
   margin: 32px 0 14px;
 }
 
+/* ---------- Tabs (segmented control) ---------- */
+.pl-tabs {
+  display: inline-flex;
+  gap: 2px;
+  max-width: 100%;
+  padding: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+.pl-tab {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 15px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-soft);
+  white-space: nowrap;
+  transition: background 0.14s ease, color 0.14s ease, box-shadow 0.14s ease;
+}
+.pl-tab:hover {
+  background: rgba(40, 39, 34, 0.05);
+  color: var(--text);
+}
+:root[data-theme="dark"] .pl-tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+.pl-tab.active {
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(40, 39, 34, 0.12), 0 1px 1px rgba(40, 39, 34, 0.05);
+}
+:root[data-theme="dark"] .pl-tab.active {
+  background: #3a3833;
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+.pl-tab-count {
+  display: inline-block;
+  margin-left: 7px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(40, 39, 34, 0.08);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+.pl-tab.active .pl-tab-count {
+  background: var(--tan-soft);
+  color: var(--ink);
+}
+:root[data-theme="dark"] .pl-tab-count {
+  background: rgba(255, 255, 255, 0.1);
+}
+:root[data-theme="dark"] .pl-tab.active .pl-tab-count {
+  background: var(--tan-deep);
+  color: var(--ink);
+}
+
+/* ---------- Stat row (status/usage) ---------- */
+.pl-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.pl-stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+}
+.pl-stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--icon);
+  margin-bottom: 6px;
+}
+.pl-stat-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+}
+.pl-stat-value.muted {
+  color: var(--text-soft);
+  font-size: 15px;
+  font-weight: 500;
+}
+
 /* ---------- Diagnostics line ---------- */
 .pl-diag {
   display: flex;

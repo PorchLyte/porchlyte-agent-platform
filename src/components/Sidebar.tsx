@@ -33,7 +33,7 @@ export function Sidebar({ status }: { status: SidebarStatus }) {
     <aside className="pl-sidebar">
       <div className="pl-brand">
         <span className="pl-brand-mark">PorchLyte</span>
-        <span className="pl-brand-sub">Hub</span>
+        <span className="pl-brand-sub">AI Agent Hub</span>
       </div>
 
       <Link href="/hub" className={`pl-nav-item${pathname === "/hub" ? " active" : ""}`}>

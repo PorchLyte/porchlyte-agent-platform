@@ -9,7 +9,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "PorchLyte Hub",
+  title: "PorchLyte · AI Agent Hub",
   description: "Your AI team's home — Foundations, agents, and everything they know about you.",
 };
 
