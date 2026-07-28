@@ -9,7 +9,10 @@ export default async function HubLayout({ children }: { children: React.ReactNod
   const ctx = await getPortalContext();
   if (!ctx) redirect("/login");
 
-  const setup = await getSetupStatus(ctx.db, ctx.memberId);
+  const [setup, adminCheck] = await Promise.all([
+    getSetupStatus(ctx.db, ctx.memberId),
+    ctx.db.from("members").select("is_admin").eq("id", ctx.memberId).maybeSingle(),
+  ]);
 
   const status: SidebarStatus = {
     foundations: Object.fromEntries(
@@ -22,7 +25,7 @@ export default async function HubLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="pl-shell">
-      <Sidebar status={status} />
+      <Sidebar status={status} isAdmin={!!adminCheck.data?.is_admin} />
       <main className="pl-main">{children}</main>
     </div>
   );

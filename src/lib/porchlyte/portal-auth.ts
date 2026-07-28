@@ -41,3 +41,19 @@ export function errorResponse(error: unknown): Response {
 
 export const unauthorized = () =>
   Response.json({ error: "Not signed in." }, { status: 401 });
+
+/**
+ * Resolve the portal context AND confirm the member is an admin. Returns null
+ * when not signed in or not an admin — admin pages redirect to /hub in both
+ * cases (don't reveal the page exists).
+ */
+export async function getAdminContext(): Promise<PortalContext | null> {
+  const ctx = await getPortalContext();
+  if (!ctx) return null;
+  const { data } = await ctx.db
+    .from("members")
+    .select("is_admin")
+    .eq("id", ctx.memberId)
+    .maybeSingle();
+  return data?.is_admin ? ctx : null;
+}

@@ -16,7 +16,13 @@ function Chevron({ open }: { open: boolean }) {
   return <span className={`pl-chevron${open ? " open" : ""}`}>▶</span>;
 }
 
-export function Sidebar({ status }: { status: SidebarStatus }) {
+export function Sidebar({
+  status,
+  isAdmin,
+}: {
+  status: SidebarStatus;
+  isAdmin: boolean;
+}) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -82,6 +88,14 @@ export function Sidebar({ status }: { status: SidebarStatus }) {
 
       <div className="pl-nav-spacer" />
 
+      {isAdmin && (
+        <Link
+          href="/hub/admin"
+          className={`pl-nav-item${pathname.startsWith("/hub/admin") ? " active" : ""}`}
+        >
+          Admin
+        </Link>
+      )}
       <Link href="/hub/account" className={`pl-nav-item${pathname === "/hub/account" ? " active" : ""}`}>
         Account
       </Link>
