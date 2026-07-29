@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import "../../dashboard/dashboard.css";
 
 /**
  * OAuth 2.1 consent screen. Supabase Auth redirects here (Site URL +
@@ -15,7 +16,13 @@ export default async function ConsentPage({
   const { authorization_id: authorizationId } = await searchParams;
 
   if (!authorizationId) {
-    return <main style={{ padding: "3rem" }}>Missing authorization request.</main>;
+    return (
+      <div className="pl-auth">
+        <div className="pl-auth-card">
+          <p className="pl-auth-lead">Missing authorization request.</p>
+        </div>
+      </div>
+    );
   }
 
   const supabase = await createClient();
@@ -34,10 +41,14 @@ export default async function ConsentPage({
 
   if (error || !authDetails) {
     return (
-      <main style={{ padding: "3rem" }}>
-        This authorization request is invalid or has expired. Please try
-        connecting again from Claude.
-      </main>
+      <div className="pl-auth">
+        <div className="pl-auth-card">
+          <p className="pl-auth-lead">
+            This authorization request is invalid or has expired. Please try
+            connecting again from Claude.
+          </p>
+        </div>
+      </div>
     );
   }
 
@@ -47,26 +58,48 @@ export default async function ConsentPage({
   }
 
   return (
-    <main style={{ maxWidth: "28rem", margin: "0 auto", padding: "3rem 1.5rem" }}>
-      <h1>Connect {authDetails.client.name ?? "Claude"} to PorchLyte</h1>
-      <p>
-        This will let your AI team read and update your PorchLyte profiles —
-        your Voice, Brand, and Local foundations and your team hires — while
-        you work in Claude.
-      </p>
-      <form
-        action="/api/oauth/decision"
-        method="POST"
-        style={{ display: "flex", gap: "0.75rem", marginTop: "1.5rem" }}
-      >
-        <input type="hidden" name="authorization_id" value={authorizationId} />
-        <button type="submit" name="decision" value="approve">
-          Connect
-        </button>
-        <button type="submit" name="decision" value="deny">
-          Cancel
-        </button>
-      </form>
-    </main>
+    <div className="pl-auth">
+      <div className="pl-auth-card">
+        <div style={{ marginBottom: 24 }}>
+          <div className="pl-brand-mark" style={{ fontSize: 26 }}>
+            PorchLyte
+          </div>
+          <div className="pl-brand-sub">AI Agent Hub</div>
+        </div>
+
+        <p className="pl-auth-lead">
+          Connect <strong>{authDetails.client.name ?? "Claude"}</strong> to
+          PorchLyte. This will let your AI team read and update your
+          PorchLyte profiles — your Voice, Brand, and Local foundations and
+          your team hires — while you work in Claude.
+        </p>
+
+        <form
+          action="/api/oauth/decision"
+          method="POST"
+          style={{ display: "flex", gap: 12 }}
+        >
+          <input type="hidden" name="authorization_id" value={authorizationId} />
+          <button
+            type="submit"
+            name="decision"
+            value="approve"
+            className="pl-btn pl-btn-primary"
+            style={{ flex: 1, justifyContent: "center" }}
+          >
+            Connect
+          </button>
+          <button
+            type="submit"
+            name="decision"
+            value="deny"
+            className="pl-btn pl-btn-ghost"
+            style={{ flex: 1, justifyContent: "center" }}
+          >
+            Cancel
+          </button>
+        </form>
+      </div>
+    </div>
   );
 }

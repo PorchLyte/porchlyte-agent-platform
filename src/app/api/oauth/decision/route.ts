@@ -28,5 +28,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
-  return NextResponse.redirect(data.redirect_url);
+  // 303, not the NextResponse.redirect default of 307: this request arrived
+  // as a POST (form submit) and OAuth callback redirects must land as GET.
+  // A 307/308 would preserve POST and Claude's callback endpoint rejects
+  // that with 405 Method Not Allowed — 303 is what forces the GET.
+  return NextResponse.redirect(data.redirect_url, 303);
 }
