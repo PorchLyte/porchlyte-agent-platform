@@ -21,7 +21,7 @@
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 22px;">
                 <tr>
                   <td align="center" bgcolor="#cbaf97" style="border-radius:4px;background-color:#cbaf97;">
-                    <a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;padding:13px 22px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;color:#282722;text-decoration:none;border-radius:4px;">
+                    <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=invite&next=/dashboard" target="_blank" style="display:inline-block;padding:13px 22px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;color:#282722;text-decoration:none;border-radius:4px;">
                       Accept invitation
                     </a>
                   </td>

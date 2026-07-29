@@ -31,14 +31,16 @@ Paste into: [Authentication → Email Templates](https://supabase.com/dashboard/
 - Site URL: `https://aiagents.porchlyte.com`
 - Redirect URLs: `https://aiagents.porchlyte.com/**`, `http://localhost:3000/**`
 
+Magic-link buttons use `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=…` so the link works on any device (OTP code already did). Deploy the updated `/auth/callback` route before re-pasting templates.
+
 **Reply-To → `support@porchlyte.com`**
 
 Not set in these HTML files — configure under SMTP. See [REPLY-TO.md](./REPLY-TO.md).
 
 ## Brand notes
 
-Warm cream / tan / ink palette. Templates use the PorchLyte logo from:
+Warm cream / tan / ink palette. Logo in emails:
 
-`public/brand/porchlyte-logo.png` → `https://aiagents.porchlyte.com/brand/porchlyte-logo.png`
+`https://aiagents.porchlyte.com/brand/porchlyte-logo.png`
 
-That URL must be live (deployed) for the logo to show in emails. Source: porchlyte.com secondary wordmark with tagline.
+Served from `public/brand/porchlyte-logo.png` once the subdomain is deployed.

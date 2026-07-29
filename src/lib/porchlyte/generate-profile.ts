@@ -2,9 +2,10 @@
  * Server-side profile-prose generation. Turns the wizard's interview answers
  * into the exact plain-prose Foundation profile the Cowork skills expect —
  * same format, same signature opening, same rules ported verbatim from the
- * foundation SKILL.md files. Uses PorchLyte's own Anthropic key.
+ * foundation SKILL.md files. Uses PorchLyte's OpenAI key.
  */
-import Anthropic from "@anthropic-ai/sdk";
+import { generateText } from "ai";
+import { openai } from "@ai-sdk/openai";
 import type { FoundationKind } from "./constants";
 import { FOUNDATIONS } from "./content";
 
@@ -14,7 +15,7 @@ const PROFILE_SPEC: Record<
   { opener: string; specifics: string }
 > = {
   voice: {
-    opener: 'You write like [their name].',
+    opener: "You write like [their name].",
     specifics:
       "their actual examples, their actual phrases, and the agent-speak they hate by name",
   },
@@ -34,6 +35,10 @@ export async function generateFoundationProse(
   answers: Record<string, string>,
   memberName?: string | null
 ): Promise<string> {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("OPENAI_API_KEY is not configured.");
+  }
+
   const spec = PROFILE_SPEC[kind];
   const questions = FOUNDATIONS[kind].questions;
 
@@ -58,26 +63,15 @@ export async function generateFoundationProse(
     `Write only the profile itself — no preamble, no closing remarks.`,
   ].join(" ");
 
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
-  const response = await client.messages.create({
-    model: "claude-opus-4-8",
-    max_tokens: 4000,
+  const { text } = await generateText({
+    // Cheap + enough for this structured prose rewrite.
+    model: openai("gpt-4o-mini"),
     system,
-    messages: [
-      {
-        role: "user",
-        content: `Here are their interview answers:\n\n${transcript}\n\nWrite the ${FOUNDATIONS[kind].label} profile now.`,
-      },
-    ],
+    prompt: `Here are their interview answers:\n\n${transcript}\n\nWrite the ${FOUNDATIONS[kind].label} profile now.`,
+    maxOutputTokens: 1200,
   });
 
-  const text = response.content
-    .filter((b): b is Anthropic.TextBlock => b.type === "text")
-    .map((b) => b.text)
-    .join("")
-    .trim();
-
-  if (!text) throw new Error("The profile writer returned an empty result.");
-  return text;
+  const trimmed = text.trim();
+  if (!trimmed) throw new Error("The profile writer returned an empty result.");
+  return trimmed;
 }
