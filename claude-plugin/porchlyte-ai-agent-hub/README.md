@@ -16,7 +16,7 @@ Two ways — pick whichever works. If one gets stuck, the other is your fallback
 
 **Marketplace (recommended — updates with one click, no re-downloading):**
 1. In Claude, go to **Customize → Plugins → Add → Add marketplace**.
-2. Paste `PorchLyte/porchlyte-agent-platform` and sync.
+2. Paste `PorchLyte/porchlyte-ai-agent-hub` and sync.
 3. Find **porchlyte-ai-agent-hub** and click **+** to install.
 4. Later, to get the newest skills: click the **···** next to the marketplace and choose **Update**.
 

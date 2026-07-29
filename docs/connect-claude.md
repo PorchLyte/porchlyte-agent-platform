@@ -7,7 +7,7 @@
 3. URL: `https://aiagents.porchlyte.com/api/mcp/mcp`
 4. Connect → OAuth → approve on `/oauth/consent`
 5. Install the plugin — two paths:
-   - **Marketplace (recommended):** Customize → Plugins → Add marketplace → `PorchLyte/porchlyte-agent-platform` → sync → install `porchlyte-ai-agent-hub`. Updates via the `···` menu → Update, no re-download.
+   - **Marketplace (recommended):** Customize → Plugins → Add marketplace → `PorchLyte/porchlyte-ai-agent-hub` → sync → install `porchlyte-ai-agent-hub`. Updates via the `···` menu → Update, no re-download.
    - **Zip (fallback):** download from hub → install from file. Use this if a marketplace sync ever seems stuck.
 6. Existing cohort: `/migrate` in old Claude project
 
@@ -34,11 +34,25 @@ curl -s https://aiagents.porchlyte.com/.well-known/oauth-protected-resource
 
 ## Plugin source
 
-- Source: `claude-plugin/porchlyte-ai-agent-hub/` — single source of truth for both install paths
-- Marketplace manifest: `.claude-plugin/marketplace.json` (repo root) — points straight at the source folder above, so it can never drift out of sync
-- Zip: `public/downloads/porchlyte-claude-plugin.zip` (fallback path only — must be rebuilt manually after any skill/command change)
-- Rebuild zip: `npm run build:plugin-zip`
-- Marketplace repo for members to paste: `PorchLyte/porchlyte-agent-platform` — this repo is public (confirmed 2026-07-29); no new exposure from adding the marketplace manifest
+- Source: `claude-plugin/porchlyte-ai-agent-hub/` — single source of truth for both install paths. Edit here, nowhere else.
+- Marketplace repo: `PorchLyte/porchlyte-ai-agent-hub` (public, dedicated) — what members paste into Add marketplace. It holds a published *copy* of the source folder above.
+- Zip: `public/downloads/porchlyte-claude-plugin.zip` — the fallback install path.
+
+**After any skill/command change, run both:**
+
+```bash
+npm run build:plugin-zip      # refresh the downloadable zip
+npm run publish:marketplace   # push the same content to the marketplace repo
+```
+
+Skipping either one leaves the two install paths on different versions. The
+publish script clones the marketplace repo, rsyncs the source folder in, and
+pushes only if something actually changed.
+
+Why a separate repo: Claude's desktop "Add marketplace" only accepts a GitHub
+repo or git URL (no plain HTTPS manifest URL), and this platform repo is
+planned to go private. A private repo can't serve as a member-facing
+marketplace, so the plugin lives in its own public repo.
 
 ## Member-facing instructions page (no login required)
 

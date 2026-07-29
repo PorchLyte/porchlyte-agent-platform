@@ -7,4 +7,4 @@ export const MCP_CONNECTOR_URL = "https://aiagents.porchlyte.com/api/mcp/mcp";
 export const PLUGIN_ZIP_PATH = "/downloads/porchlyte-claude-plugin.zip";
 
 /** Marketplace repo for "Add marketplace" installs (recommended — updates with one click). */
-export const PLUGIN_MARKETPLACE_REPO = "PorchLyte/porchlyte-agent-platform";
+export const PLUGIN_MARKETPLACE_REPO = "PorchLyte/porchlyte-ai-agent-hub";
