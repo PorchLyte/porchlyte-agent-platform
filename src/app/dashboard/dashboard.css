@@ -586,6 +586,39 @@
   text-underline-offset: 2px;
 }
 
+.pl-connect-steps {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-soft);
+}
+.pl-connect-steps li {
+  margin-bottom: 12px;
+}
+.pl-connect-steps strong {
+  color: var(--text);
+}
+.pl-connect-url-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.pl-connect-url {
+  flex: 1;
+  min-width: 0;
+  display: block;
+  padding: 10px 12px;
+  background: var(--cream, #f6f2ec);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 12px;
+  word-break: break-all;
+  color: var(--text);
+}
+
 /* ---------- Table (admin) ---------- */
 .pl-table-wrap {
   overflow-x: auto;

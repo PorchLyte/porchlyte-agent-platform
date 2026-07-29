@@ -1,0 +1,6 @@
+{
+  "porchlyte": {
+    "type": "http",
+    "url": "https://aiagents.porchlyte.com/api/mcp/mcp"
+  }
+}

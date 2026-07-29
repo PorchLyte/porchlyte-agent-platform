@@ -10,6 +10,7 @@ import {
 } from "@/lib/porchlyte/content";
 import { RESOURCE_NAV } from "@/lib/porchlyte/resources";
 import { planIncludesTeam } from "@/lib/porchlyte/constants";
+import { ConnectClaudeCard } from "@/components/ConnectClaudeCard";
 
 const FOUNDATION_STATUS_LABEL: Record<string, string> = {
   complete: "Complete",
@@ -111,54 +112,10 @@ export default async function HubHome() {
       </div>
 
       <div className="pl-section-label">Connect to Claude</div>
-      <div className="pl-card">
-        <div className="pl-card-title">
-          {connector?.connector_linked_at ? "Claude is connected" : "Not connected yet"}
-        </div>
-        <p className="pl-card-body" style={{ marginBottom: 16 }}>
-          {connector?.connector_linked_at
-            ? `Last synced ${formatWhen(connector.last_successful_sync_at)}. Your agents can read and update everything here while you work in Claude.`
-            : "Once your Foundations are set up, install the PorchLyte plugin and connect it to Claude. This is the last step — not a prerequisite for setup."}
-        </p>
-        <ConnectorDiagnostics
-          installed={connector?.plugin_installed_version ?? null}
-          latest={connector?.plugin_latest_version ?? null}
-          linked={!!connector?.connector_linked_at}
-        />
-      </div>
+      <ConnectClaudeCard
+        linked={!!connector?.connector_linked_at}
+        lastSync={connector?.last_successful_sync_at ?? null}
+      />
     </>
   );
-}
-
-function ConnectorDiagnostics({
-  installed,
-  latest,
-  linked,
-}: {
-  installed: string | null;
-  latest: string | null;
-  linked: boolean;
-}) {
-  if (!linked) {
-    return (
-      <button className="pl-btn pl-btn-primary" disabled>
-        Connect Claude (finish Foundations first)
-      </button>
-    );
-  }
-  if (installed && latest && installed !== latest) {
-    return (
-      <div className="pl-diag">
-        Your plugin is out of date (v{installed} installed, v{latest} available).
-        <span className="pl-inline-link">Update</span>
-      </div>
-    );
-  }
-  return <div className="pl-diag">Everything&apos;s current.</div>;
-}
-
-function formatWhen(iso: string | null): string {
-  if (!iso) return "recently";
-  const d = new Date(iso);
-  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }

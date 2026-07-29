@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:plugin-zip": "mkdir -p public/downloads && rm -f public/downloads/porchlyte-claude-plugin.zip && (cd claude-plugin && zip -r ../public/downloads/porchlyte-claude-plugin.zip porchlyte-ai-agent-hub -x '*.DS_Store')",
     "start": "next start",
     "lint": "eslint"
   },
