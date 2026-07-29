@@ -25,7 +25,7 @@ export default async function ConsentPage({
 
   if (!user) {
     redirect(
-      `/login?redirect=${encodeURIComponent(`/oauth/consent?authorization_id=${authorizationId}`)}`
+      `/?redirect=${encodeURIComponent(`/oauth/consent?authorization_id=${authorizationId}`)}`
     );
   }
 

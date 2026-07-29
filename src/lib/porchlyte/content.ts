@@ -2,7 +2,8 @@
  * Static presentation content for the portal — agent dashboards and the
  * Foundation wizard. Purposes and interview questions are ported from the
  * plugin SKILL.md files (the source of truth). Prompt libraries are seeded
- * with starters; Tracy fills these in over time (one-click copy in the UI).
+ * with Tracy's course prompts (Day in the Life + starters). Broader course
+ * frameworks live under /dashboard/resources.
  */
 import type { FoundationKind, ScheduledAgent, TeamAgent } from "./constants";
 
@@ -98,9 +99,6 @@ export type AgentContent = {
   prompts: AgentPrompt[];
 };
 
-const PLACEHOLDER_NOTE =
-  "More ready-to-use prompts are on the way from Tracy — they'll show up here to copy in one click.";
-
 export const AGENTS: Record<TeamAgent, AgentContent> = {
   darla: {
     agent: "darla",
@@ -122,7 +120,11 @@ export const AGENTS: Record<TeamAgent, AgentContent> = {
       "She runs on a schedule you set — pause or resume it from the panel below.",
     ],
     prompts: [
-      { title: "Morning brief", text: "Darla, give me my morning brief." },
+      {
+        title: "Morning brief (full)",
+        text: "Darla, give me my morning brief. Pull anything in my inbox that needs a reply today, tell me what's on my calendar and whether anything needs prep before it, and flag anything moving in my local market. Then sort it for me: what's time-sensitive, what can wait, and what I can safely ignore. Keep it short, and end with the one thing you'd handle first if you were me.",
+      },
+      { title: "Quick brief", text: "Darla, give me my morning brief." },
       { title: "Catch me up", text: "Darla, I've been heads-down all day — catch me up on anything I missed." },
     ],
   },
@@ -145,6 +147,10 @@ export const AGENTS: Record<TeamAgent, AgentContent> = {
       "Paste a rough voice-note transcript and let her shape it into a post.",
     ],
     prompts: [
+      {
+        title: "Today's post (full)",
+        text: "Chloe, write me an Instagram post for today. The angle is [your topic], and I'm talking to [who you serve]. Give me the caption plus two hook options, keep it in my voice, and don't let it get salesy. Add a simple call to action at the end, and suggest a photo or video I could pair it with so I'm not stuck on that part either.",
+      },
       { title: "Week of content", text: "Chloe, give me a week of content ideas for Instagram based on my voice and market." },
       { title: "Reel script", text: "Chloe, write me a 30-second Reel script about why now is a good time to buy in my area." },
     ],
@@ -214,6 +220,10 @@ export const AGENTS: Record<TeamAgent, AgentContent> = {
       "Treena covers under-contract email; general nurtures are Ella's.",
     ],
     prompts: [
+      {
+        title: "Walk the deal (full)",
+        text: "Treena, here's my deal. We're under contract, accepted [date], closing [date], and here are the terms and conditions: [paste]. Walk the transaction and flag what's coming up. Tell me what's on my plate and what the buyer needs to do next, each with its deadline, and call out anything at risk of slipping. Then draft a short, warm update I can send the buyer so they know exactly where things stand.",
+      },
       { title: "Weekly update", text: "Treena, draft this week's update for my client who's under contract." },
       { title: "Summarize inspection", text: "Treena, here's the inspection report — give me a one-page summary my buyer can actually read." },
     ],
@@ -260,6 +270,10 @@ export const AGENTS: Record<TeamAgent, AgentContent> = {
       "The client roster lives in your Drive — Sloane reads from there.",
     ],
     prompts: [
+      {
+        title: "Stay in touch (full)",
+        text: "Sloane, help me stay in touch today. Surface anyone I've fallen out of touch with, plus anyone with a birthday or home anniversary coming up. Pick one person, tell me why now's a good moment to reach out, and draft a warm, no-agenda check-in. No pitch, no ask, just a real note that keeps me top of mind. Keep it short enough that it still feels personal, like I actually typed it myself.",
+      },
       { title: "Who to reach", text: "Sloane, who in my sphere haven't I reached out to in a while, and what should I say?" },
       { title: "Anniversary note", text: "Sloane, write a home-anniversary message for a past client — warm, not salesy." },
     ],
@@ -329,5 +343,3 @@ export const FOUNDATION_ORDER: FoundationKind[] = ["voice", "brand", "local"];
 export function isScheduled(agent: TeamAgent): agent is ScheduledAgent {
   return AGENTS[agent].scheduled;
 }
-
-export { PLACEHOLDER_NOTE };

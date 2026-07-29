@@ -44,7 +44,7 @@ export const unauthorized = () =>
 
 /**
  * Resolve the portal context AND confirm the member is an admin. Returns null
- * when not signed in or not an admin — admin pages redirect to /hub in both
+ * when not signed in or not an admin — admin pages redirect to /dashboard in both
  * cases (don't reveal the page exists).
  */
 export async function getAdminContext(): Promise<PortalContext | null> {

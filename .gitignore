@@ -42,3 +42,9 @@ next-env.d.ts
 
 # Keep the example env tracked for reference
 !.env.example
+
+# Local data exports (PII)
+docs/exports/
+
+# Large Tracy source binaries (content is ported into src/lib/porchlyte)
+docs/tracy-source/

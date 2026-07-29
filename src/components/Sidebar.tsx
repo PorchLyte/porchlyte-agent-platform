@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { AGENT_ORDER, AGENTS, FOUNDATIONS, FOUNDATION_ORDER } from "@/lib/porchlyte/content";
+import { RESOURCE_NAV } from "@/lib/porchlyte/resources";
 import type { FoundationKind, TeamAgent } from "@/lib/porchlyte/constants";
 
 export type SidebarStatus = {
@@ -28,10 +29,13 @@ export function Sidebar({
 
   const [foundOpen, setFoundOpen] = useState(pathname.includes("/foundations"));
   const [agentsOpen, setAgentsOpen] = useState(pathname.includes("/agents"));
+  const [resourcesOpen, setResourcesOpen] = useState(
+    pathname.startsWith("/dashboard/resources")
+  );
 
   async function signOut() {
     await createClient().auth.signOut();
-    router.push("/login");
+    router.push("/");
     router.refresh();
   }
 
@@ -42,7 +46,7 @@ export function Sidebar({
         <span className="pl-brand-sub">AI Agent Hub</span>
       </div>
 
-      <Link href="/hub" className={`pl-nav-item${pathname === "/hub" ? " active" : ""}`}>
+      <Link href="/dashboard" className={`pl-nav-item${pathname === "/dashboard" ? " active" : ""}`}>
         Home
       </Link>
 
@@ -54,7 +58,7 @@ export function Sidebar({
       {foundOpen && (
         <div className="pl-subnav">
           {FOUNDATION_ORDER.map((kind) => {
-            const href = `/hub/foundations/${kind}`;
+            const href = `/dashboard/foundations/${kind}`;
             const st = status.foundations[kind] ?? "empty";
             return (
               <Link key={kind} href={href} className={`pl-subnav-item${pathname === href ? " active" : ""}`}>
@@ -74,7 +78,7 @@ export function Sidebar({
       {agentsOpen && (
         <div className="pl-subnav">
           {AGENT_ORDER.map((agent) => {
-            const href = `/hub/agents/${agent}`;
+            const href = `/dashboard/agents/${agent}`;
             const st = status.team[agent] ?? "not_hired";
             return (
               <Link key={agent} href={href} className={`pl-subnav-item${pathname === href ? " active" : ""}`}>
@@ -86,17 +90,45 @@ export function Sidebar({
         </div>
       )}
 
+      {/* Resources group */}
+      <button
+        className="pl-nav-group-btn"
+        onClick={() => setResourcesOpen((v) => !v)}
+      >
+        <span className="pl-nav-group-label">Resources</span>
+        <Chevron open={resourcesOpen} />
+      </button>
+      {resourcesOpen && (
+        <div className="pl-subnav">
+          <Link
+            href="/dashboard/resources"
+            className={`pl-subnav-item${pathname === "/dashboard/resources" ? " active" : ""}`}
+          >
+            <span>Overview</span>
+          </Link>
+          {RESOURCE_NAV.map((r) => (
+            <Link
+              key={r.id}
+              href={r.href}
+              className={`pl-subnav-item${pathname === r.href ? " active" : ""}`}
+            >
+              <span>{r.label}</span>
+            </Link>
+          ))}
+        </div>
+      )}
+
       <div className="pl-nav-spacer" />
 
       {isAdmin && (
         <Link
-          href="/hub/admin"
-          className={`pl-nav-item${pathname.startsWith("/hub/admin") ? " active" : ""}`}
+          href="/dashboard/admin"
+          className={`pl-nav-item${pathname.startsWith("/dashboard/admin") ? " active" : ""}`}
         >
           Admin
         </Link>
       )}
-      <Link href="/hub/account" className={`pl-nav-item${pathname === "/hub/account" ? " active" : ""}`}>
+      <Link href="/dashboard/account" className={`pl-nav-item${pathname === "/dashboard/account" ? " active" : ""}`}>
         Account
       </Link>
       <button className="pl-nav-item" onClick={signOut}>

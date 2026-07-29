@@ -148,10 +148,6 @@ export function AgentTabs({
                 <CopyButton text={p.text} />
               </div>
             ))}
-            <p className="pl-card-body" style={{ marginTop: 14, fontSize: 13 }}>
-              More ready-to-use prompts are on the way from Tracy — they&apos;ll
-              show up here to copy in one click.
-            </p>
           </div>
         </div>
       )}

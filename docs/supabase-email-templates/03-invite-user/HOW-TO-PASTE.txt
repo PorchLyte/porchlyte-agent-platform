@@ -1,0 +1,6 @@
+Supabase dashboard template: Invite user
+
+1. Open Authentication → Email Templates → "Invite user"
+2. Copy subject.txt into the Subject field
+3. Copy ALL of body.html into the Message body field
+4. Save

@@ -1,0 +1,6 @@
+Supabase dashboard template: Change email address
+
+1. Open Authentication → Email Templates → "Change email address"
+2. Copy subject.txt into the Subject field
+3. Copy ALL of body.html into the Message body field
+4. Save

@@ -1,0 +1,6 @@
+Supabase dashboard template: Reset password
+
+1. Open Authentication → Email Templates → "Reset password"
+2. Copy subject.txt into the Subject field
+3. Copy ALL of body.html into the Message body field
+4. Save
