@@ -1,0 +1,20 @@
+{
+  "name": "porchlyte-agent-platform",
+  "owner": {
+    "name": "Tracy with PorchLyte + Agent Social Haus",
+    "email": "tracy@porchlyte.com"
+  },
+  "description": "PorchLyte AI Agent Hub — Voice, Brand, Local, and the nine-agent team, connected to your PorchLyte account.",
+  "plugins": [
+    {
+      "name": "porchlyte-ai-agent-hub",
+      "source": "./claude-plugin/porchlyte-ai-agent-hub",
+      "description": "PorchLyte AI Agent Hub — Voice, Brand, Local, and the nine-agent team, connected to your PorchLyte account so Claude reads and writes your real Foundations instead of chat memory.",
+      "author": {
+        "name": "Tracy with PorchLyte + Agent Social Haus"
+      },
+      "homepage": "https://aiagents.porchlyte.com",
+      "license": "Proprietary — paid access required; see LICENSE"
+    }
+  ]
+}

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   MCP_CONNECTOR_URL,
+  PLUGIN_MARKETPLACE_REPO,
   PLUGIN_VERSION,
   PLUGIN_ZIP_PATH,
 } from "@/lib/porchlyte/connector";
@@ -14,12 +15,12 @@ export function ConnectClaudeCard({
   linked: boolean;
   lastSync: string | null;
 }) {
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<"url" | "repo" | null>(null);
 
-  async function copyUrl() {
-    await navigator.clipboard.writeText(MCP_CONNECTOR_URL);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 2000);
+  async function copyText(text: string, which: "url" | "repo") {
+    await navigator.clipboard.writeText(text);
+    setCopied(which);
+    window.setTimeout(() => setCopied(null), 2000);
   }
 
   return (
@@ -43,17 +44,40 @@ export function ConnectClaudeCard({
           membership email:
           <div className="pl-connect-url-row">
             <code className="pl-connect-url">{MCP_CONNECTOR_URL}</code>
-            <button type="button" className="pl-btn pl-btn-ghost" onClick={copyUrl}>
-              {copied ? "Copied" : "Copy"}
+            <button
+              type="button"
+              className="pl-btn pl-btn-ghost"
+              onClick={() => copyText(MCP_CONNECTOR_URL, "url")}
+            >
+              {copied === "url" ? "Copied" : "Copy"}
             </button>
           </div>
         </li>
         <li>
-          Download and install the plugin (v{PLUGIN_VERSION}) so Voice, Brand,
-          Local, and the nine agents use your account:
+          Install the plugin (v{PLUGIN_VERSION}) so Voice, Brand, Local, and
+          the nine agents use your account — two ways, pick either:
           <div style={{ marginTop: 10 }}>
-            <a className="pl-btn pl-btn-primary" href={PLUGIN_ZIP_PATH} download>
-              Download plugin (.zip)
+            <div className="pl-connect-url-row">
+              <code className="pl-connect-url">{PLUGIN_MARKETPLACE_REPO}</code>
+              <button
+                type="button"
+                className="pl-btn pl-btn-ghost"
+                onClick={() => copyText(PLUGIN_MARKETPLACE_REPO, "repo")}
+              >
+                {copied === "repo" ? "Copied" : "Copy"}
+              </button>
+            </div>
+            <p className="pl-field-hint" style={{ marginTop: 4 }}>
+              Recommended — paste into Customize → Plugins → Add marketplace.
+              Updates later are one click.
+            </p>
+            <a
+              className="pl-btn pl-btn-primary"
+              href={PLUGIN_ZIP_PATH}
+              download
+              style={{ marginTop: 10, display: "inline-flex" }}
+            >
+              Or download plugin (.zip)
             </a>
           </div>
         </li>
