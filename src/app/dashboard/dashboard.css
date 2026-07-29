@@ -6,6 +6,17 @@
   min-height: 100vh;
 }
 
+/* No sidebar to grid against — membership-blocked state, error boundary. */
+.pl-shell-blocked {
+  grid-template-columns: 1fr;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pl-shell-blocked .pl-main {
+  max-width: 560px;
+}
+
 /* ---------- Sidebar ---------- */
 .pl-sidebar {
   background: var(--surface);

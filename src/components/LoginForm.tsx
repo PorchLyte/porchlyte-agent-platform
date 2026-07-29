@@ -3,17 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import type { EmailOtpType } from "@supabase/supabase-js";
 
 type Step = "email" | "code";
-
-/** OTP types from Auth templates that include a code (login, invite, confirm). */
-const VERIFY_TYPES: EmailOtpType[] = [
-  "email",
-  "magiclink",
-  "invite",
-  "signup",
-];
 
 export function LoginForm() {
   const router = useRouter();
@@ -85,18 +76,11 @@ export function LoginForm() {
 
   async function verifyToken(token: string) {
     const supabase = createClient();
-    try {
-      await Promise.any(
-        VERIFY_TYPES.map((type) =>
-          supabase.auth.verifyOtp({ email, token, type }).then(({ error }) => {
-            if (error) throw error;
-          })
-        )
-      );
-      return null;
-    } catch {
-      return new Error("invalid");
-    }
+    // signInWithOtp always issues an "email" type code — verifying against
+    // that single type avoids burning the member's remaining attempts on
+    // types that were never going to match.
+    const { error } = await supabase.auth.verifyOtp({ email, token, type: "email" });
+    return error ? new Error("invalid") : null;
   }
 
   async function onCodeSubmit(e: React.FormEvent) {

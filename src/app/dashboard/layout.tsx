@@ -1,18 +1,40 @@
 import { redirect } from "next/navigation";
 import "./dashboard.css";
 import { getPortalContext } from "@/lib/porchlyte/portal-auth";
-import { getSetupStatus } from "@/lib/porchlyte/operations";
+import { getSetupStatus, PlatformError } from "@/lib/porchlyte/operations";
 import { Sidebar, type SidebarStatus } from "@/components/Sidebar";
+import { SignOutButton } from "@/components/SignOutButton";
 import type { FoundationKind, TeamAgent } from "@/lib/porchlyte/constants";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const ctx = await getPortalContext();
   if (!ctx) redirect("/");
 
-  const [setup, adminCheck] = await Promise.all([
-    getSetupStatus(ctx.db, ctx.memberId),
-    ctx.db.from("members").select("is_admin").eq("id", ctx.memberId).maybeSingle(),
-  ]);
+  let setup;
+  try {
+    setup = await getSetupStatus(ctx.db, ctx.memberId);
+  } catch (error) {
+    if (error instanceof PlatformError) {
+      return (
+        <div className="pl-shell pl-shell-blocked">
+          <main className="pl-main">
+            <div className="pl-page-head">
+              <h1 className="pl-page-title">Your membership needs attention</h1>
+              <p className="pl-page-sub">{error.message}</p>
+            </div>
+            <SignOutButton />
+          </main>
+        </div>
+      );
+    }
+    throw error;
+  }
+
+  const adminCheck = await ctx.db
+    .from("members")
+    .select("is_admin")
+    .eq("id", ctx.memberId)
+    .maybeSingle();
 
   const status: SidebarStatus = {
     foundations: Object.fromEntries(
