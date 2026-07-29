@@ -1,8 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 import { getPortalContext } from "@/lib/porchlyte/portal-auth";
 import {
+  getScheduledTasks,
   getSetupStatus,
-  getTaskState,
   getTeamMember,
 } from "@/lib/porchlyte/operations";
 import {
@@ -33,7 +33,7 @@ export default async function AgentPage({
   const content = AGENTS[agent];
   const scheduled = isScheduledAgent(agent);
 
-  const [record, setup, usageResult, task] = await Promise.all([
+  const [record, setup, usageResult, tasks] = await Promise.all([
     getTeamMember(ctx.db, ctx.memberId, agent),
     getSetupStatus(ctx.db, ctx.memberId),
     ctx.db
@@ -43,7 +43,7 @@ export default async function AgentPage({
       .eq("agent", agent)
       .order("created_at", { ascending: false })
       .limit(1),
-    scheduled ? getTaskState(ctx.db, ctx.memberId, agent) : Promise.resolve(null),
+    scheduled ? getScheduledTasks(ctx.db, ctx.memberId, agent) : Promise.resolve(null),
   ]);
 
   const teamUnlocked = planIncludesTeam(setup.member.plan);
@@ -76,14 +76,15 @@ export default async function AgentPage({
         scheduledAgent={scheduled ? agent : null}
         teamUnlocked={teamUnlocked}
         usage={usage}
-        task={
-          task
-            ? {
-                state: task.state === "paused" ? "paused" : "active",
-                schedule_label: task.schedule_label,
-                last_run_at: task.last_run_at,
-                last_run_summary: task.last_run_summary,
-              }
+        tasks={
+          tasks
+            ? tasks.map((t) => ({
+                task_name: t.task_name,
+                state: t.state === "paused" ? "paused" : "active",
+                schedule_label: t.schedule_label,
+                last_run_at: t.last_run_at,
+                last_run_summary: t.last_run_summary,
+              }))
             : null
         }
       />

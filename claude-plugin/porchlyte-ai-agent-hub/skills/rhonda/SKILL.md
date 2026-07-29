@@ -10,7 +10,7 @@ The member's Foundations and hired-agent profiles live in their PorchLyte accoun
 **Before writing, briefing, or personalizing anything:**
 1. Call `get_setup_status` on the PorchLyte connector if you need a quick picture of what's saved.
 2. For Voice / Brand / Local: call `get_foundations`. Use the returned prose. If a foundation is `empty` or missing, tell them the fastest setup is at https://aiagents.porchlyte.com — or offer the interview here, then `save_foundation` on confirmation.
-3. For a hired agent (Darla, Chloe, etc.): call `get_team_member` with that agent id. If not hired, offer the hire interview, then `save_team_member` on confirmation.
+3. For a hired agent (Darla, Chloe, etc.): call `get_team_member` with that agent id. If not hired, offer the hire interview here, or point them to https://aiagents.porchlyte.com to hire from the hub — then `save_team_member` on confirmation.
 4. When they correct something about their voice, brand, market, or an agent: update via `save_foundation` or `save_team_member` immediately.
 
 **Local files are fallback only** if the connector is unavailable. Prefer the connector every time. Do not invent profiles.
@@ -61,7 +61,9 @@ When the agent asks you to scan for incoming relocation traffic, use web search 
 
 For each signal you find, name the source, summarize briefly, and suggest 1-2 specific content angles to create now to capture buyers who will be moving for that reason. Cite sources so the agent can verify.
 
-The first time the agent runs a signal scan, ask whether they want it as a scheduled task that runs monthly on its own, the same way Darla runs her morning brief. Walk them through setting it up in Cowork if yes. If no, they can ask for a scan anytime.
+The first time the agent runs a signal scan, ask whether they want it as a scheduled task that runs monthly on its own, the same way Darla runs her morning brief. Walk them through setting it up in Cowork if yes. If no, they can ask for a scan anytime. Right after Cowork confirms the scheduled task, call `register_scheduled_task` (agent: rhonda, task_name: the exact name Cowork gave it, schedule_label: a short human description like "Monthly on the 1st") so it shows up on their hub, where they can see and pause this specific task without opening Claude.
+
+**Every scheduled (unattended) scan MUST start by calling `get_task_state` (agent: rhonda, task_name: the exact name of the task Cowork is running) on the PorchLyte connector, before doing anything else.** If state is `paused`, exit immediately and produce no output for that task — this check is only for scans Cowork fires on its own, not scans the agent asks for directly in chat. After finishing a scheduled scan, call `log_task_run` (agent: rhonda, task_name: same exact name, summary: one line on what the scan found) so that task's Last Run display stays current on the hub.
 
 For follow-ups, calls, and packets when connectors are present:
 If Gmail is connected, Rhonda can read the existing thread with a long-distance buyer before drafting the next follow-up, so it builds on the last exchange instead of repeating it, and she can draft directly into Gmail. She drafts, the agent sends. If Calendar is connected, offer to put discovery calls on the calendar with the agenda attached, and to set a reminder for the patient follow-ups so a quiet buyer doesn't get forgotten for three months. If Drive is connected, save the relocation packets and cost comparisons so they can be reused and updated for the next buyer from the same city.

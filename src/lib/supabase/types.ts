@@ -166,6 +166,7 @@ export type Database = {
           member_id: string
           schedule_label: string | null
           state: string
+          task_name: string
           updated_at: string
         }
         Insert: {
@@ -176,6 +177,7 @@ export type Database = {
           member_id: string
           schedule_label?: string | null
           state?: string
+          task_name?: string
           updated_at?: string
         }
         Update: {
@@ -186,6 +188,7 @@ export type Database = {
           member_id?: string
           schedule_label?: string | null
           state?: string
+          task_name?: string
           updated_at?: string
         }
         Relationships: [

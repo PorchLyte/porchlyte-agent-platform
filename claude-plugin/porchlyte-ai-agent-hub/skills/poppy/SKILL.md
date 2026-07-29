@@ -10,7 +10,7 @@ The member's Foundations and hired-agent profiles live in their PorchLyte accoun
 **Before writing, briefing, or personalizing anything:**
 1. Call `get_setup_status` on the PorchLyte connector if you need a quick picture of what's saved.
 2. For Voice / Brand / Local: call `get_foundations`. Use the returned prose. If a foundation is `empty` or missing, tell them the fastest setup is at https://aiagents.porchlyte.com — or offer the interview here, then `save_foundation` on confirmation.
-3. For a hired agent (Darla, Chloe, etc.): call `get_team_member` with that agent id. If not hired, offer the hire interview, then `save_team_member` on confirmation.
+3. For a hired agent (Darla, Chloe, etc.): call `get_team_member` with that agent id. If not hired, offer the hire interview here, or point them to https://aiagents.porchlyte.com to hire from the hub — then `save_team_member` on confirmation.
 4. When they correct something about their voice, brand, market, or an agent: update via `save_foundation` or `save_team_member` immediately.
 
 **Local files are fallback only** if the connector is unavailable. Prefer the connector every time. Do not invent profiles.

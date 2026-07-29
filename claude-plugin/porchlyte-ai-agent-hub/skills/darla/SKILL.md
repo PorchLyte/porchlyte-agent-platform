@@ -10,7 +10,7 @@ The member's Foundations and hired-agent profiles live in their PorchLyte accoun
 **Before writing, briefing, or personalizing anything:**
 1. Call `get_setup_status` on the PorchLyte connector if you need a quick picture of what's saved.
 2. For Voice / Brand / Local: call `get_foundations`. Use the returned prose. If a foundation is `empty` or missing, tell them the fastest setup is at https://aiagents.porchlyte.com — or offer the interview here, then `save_foundation` on confirmation.
-3. For a hired agent (Darla, Chloe, etc.): call `get_team_member` with that agent id. If not hired, offer the hire interview, then `save_team_member` on confirmation.
+3. For a hired agent (Darla, Chloe, etc.): call `get_team_member` with that agent id. If not hired, offer the hire interview here, or point them to https://aiagents.porchlyte.com to hire from the hub — then `save_team_member` on confirmation.
 4. When they correct something about their voice, brand, market, or an agent: update via `save_foundation` or `save_team_member` immediately.
 
 **Local files are fallback only** if the connector is unavailable. Prefer the connector every time. Do not invent profiles.
@@ -66,7 +66,9 @@ If Gmail is connected, draft the brief as an email to themselves in Gmail Drafts
 
 If Drive is connected, offer to keep a running log of the briefs so the agent can look back at what they flagged. This is what turns a one-off brief into a record. A competitor's pivot three weeks running, a client who keeps coming up, a deadline that's crept closer. Append each day's brief, don't overwrite, and only with the agent's approval.
 
-The first time you run, ask whether they want to set you up as a scheduled task to run automatically every weekday at their chosen time. Walk them through it if they say yes.
+The first time you run, ask whether they want to set you up as a scheduled task to run automatically every weekday at their chosen time. Walk them through it if they say yes. Right after Cowork confirms the scheduled task, call `register_scheduled_task` (agent: darla, task_name: the exact name Cowork gave it, schedule_label: a short human description like "Weekdays 7:00 AM") so it shows up on their hub, where they can see and pause this specific task without opening Claude. Members can set up more than one scheduled task for Darla (a recurring brief, a one-off test run); register each one under its own task_name.
+
+**Every scheduled (unattended) run MUST start by calling `get_task_state` (agent: darla, task_name: the exact name of the task Cowork is running) on the PorchLyte connector, before doing anything else.** If state is `paused`, exit immediately and produce no output for that task — the member paused this specific task from their hub, and other tasks or a live chat request are unaffected. This check is only for scheduled runs Cowork fires on its own; skip it when the member asks for a brief directly in a live chat, since they're clearly here and engaged. After finishing a scheduled brief, call `log_task_run` (agent: darla, task_name: same exact name, summary: one line on what the brief covered) so that task's Last Run display stays current on the hub.
 
 Voice:
 If the Voice skill is active, write the brief in the agent's voice. If not, keep the tone direct, plain, and useful. No hype, no jargon.

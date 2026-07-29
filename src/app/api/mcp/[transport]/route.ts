@@ -23,6 +23,7 @@ import {
   getTaskState,
   getTeamMember,
   logTaskRun,
+  registerScheduledTask,
   saveFoundation,
   savePartial,
   saveTeamMember,
@@ -182,22 +183,48 @@ const handler = createMcpHandler(
     );
 
     server.tool(
-      "get_task_state",
-      "Scheduled skills (Darla's morning brief, Rhonda's scan) MUST call this at the start of every scheduled run. If state is paused, exit quietly without producing output — the member paused this from their hub.",
-      { agent: scheduledAgentSchema },
+      "register_scheduled_task",
+      "Call this once, right after setting up a NEW scheduled task in Cowork for Darla's brief or Rhonda's scan. Use the exact task name Cowork gave the task, so this stays in sync with what fires automatically. Registers it on the member's hub so they can see and pause this specific task (not just the agent as a whole). Safe to call again for a task that's already registered — it won't reset a paused task back to active.",
+      {
+        agent: scheduledAgentSchema,
+        task_name: z.string().min(1).describe("The exact name Cowork gave this scheduled task"),
+        schedule_label: z
+          .string()
+          .optional()
+          .describe("Human-readable cadence, e.g. \"Weekdays 7:00 AM\" or \"Monthly on the 1st\""),
+      },
       async (args, extra) =>
-        run(extra, (db, memberId) => getTaskState(db, memberId, args.agent))
+        run(extra, (db, memberId) =>
+          registerScheduledTask(db, memberId, args.agent, {
+            task_name: args.task_name,
+            schedule_label: args.schedule_label,
+          })
+        )
+    );
+
+    server.tool(
+      "get_task_state",
+      "Scheduled skills (Darla's morning brief, Rhonda's scan) MUST call this at the start of every scheduled run, passing the exact task_name Cowork is running. If state is paused, exit quietly without producing output — the member paused this specific task from their hub.",
+      {
+        agent: scheduledAgentSchema,
+        task_name: z.string().min(1).describe("The exact name Cowork gave this scheduled task"),
+      },
+      async (args, extra) =>
+        run(extra, (db, memberId) => getTaskState(db, memberId, args.agent, args.task_name))
     );
 
     server.tool(
       "log_task_run",
-      "Scheduled skills call this after completing a run, with a one-line summary of what the run produced. Feeds the last-run display on the member's hub.",
+      "Scheduled skills call this after completing a run, passing the exact task_name and a one-line summary of what the run produced. Feeds the last-run display on the member's hub for that specific task.",
       {
         agent: scheduledAgentSchema,
+        task_name: z.string().min(1).describe("The exact name Cowork gave this scheduled task"),
         summary: z.string().describe("One line: what this run produced"),
       },
       async (args, extra) =>
-        run(extra, (db, memberId) => logTaskRun(db, memberId, args.agent, args.summary))
+        run(extra, (db, memberId) =>
+          logTaskRun(db, memberId, args.agent, args.task_name, args.summary)
+        )
     );
   },
   {

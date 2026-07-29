@@ -3,23 +3,56 @@
 import { useState } from "react";
 import type { ScheduledAgent } from "@/lib/porchlyte/constants";
 
-type TaskState = {
+type Task = {
+  task_name: string;
   state: "active" | "paused";
   schedule_label: string | null;
   last_run_at: string | null;
   last_run_summary: string | null;
 };
 
-export function SchedulePanel({
+/** One agent's scheduled tasks, each with its own pause/resume toggle. */
+export function ScheduleList({
   agent,
   agentName,
   initial,
 }: {
   agent: ScheduledAgent;
   agentName: string;
-  initial: TaskState;
+  initial: Task[];
 }) {
-  const [task, setTask] = useState<TaskState>(initial);
+  if (initial.length === 0) {
+    return (
+      <div className="pl-card">
+        <div className="pl-card-title">Scheduled tasks</div>
+        <p className="pl-card-body" style={{ marginTop: 8 }}>
+          No scheduled tasks yet. Ask {agentName} to set one up in Cowork —
+          once it&apos;s created there, it shows up here so you can pause or
+          resume it any time without opening Claude.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {initial.map((task) => (
+        <TaskCard key={task.task_name} agent={agent} agentName={agentName} initial={task} />
+      ))}
+    </>
+  );
+}
+
+function TaskCard({
+  agent,
+  agentName,
+  initial,
+}: {
+  agent: ScheduledAgent;
+  agentName: string;
+  initial: Task;
+}) {
+  const [task, setTask] = useState<Task>(initial);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,11 +61,14 @@ export function SchedulePanel({
     setError(null);
     const nextState = task.state === "active" ? "paused" : "active";
     try {
-      const res = await fetch(`/api/portal/tasks/${agent}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ state: nextState }),
-      });
+      const res = await fetch(
+        `/api/portal/tasks/${agent}/${encodeURIComponent(task.task_name)}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ state: nextState }),
+        }
+      );
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Couldn't update");
       setTask((t) => ({ ...t, state: data.state }));
@@ -44,11 +80,11 @@ export function SchedulePanel({
   }
 
   return (
-    <div className="pl-card">
-      <div className="pl-card-title">Schedule</div>
-      <p className="pl-card-body" style={{ marginBottom: 16 }}>
-        {agentName} runs on a schedule you set in Cowork. Pause her here any time
-        — she checks this before every run and stays quiet while paused.
+    <div className="pl-card" style={{ marginBottom: 16 }}>
+      <div className="pl-card-title">{task.task_name}</div>
+      <p className="pl-card-body" style={{ marginBottom: 16, marginTop: 4 }}>
+        {agentName} checks this specific task before it runs and stays quiet
+        while it&apos;s paused.
       </p>
       <div className="pl-schedule">
         <div className="pl-schedule-row">

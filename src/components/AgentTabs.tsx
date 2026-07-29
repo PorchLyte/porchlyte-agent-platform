@@ -4,9 +4,10 @@ import { useState } from "react";
 import type { ScheduledAgent } from "@/lib/porchlyte/constants";
 import type { AgentContent } from "@/lib/porchlyte/content";
 import { CopyButton } from "./CopyButton";
-import { SchedulePanel } from "./SchedulePanel";
+import { ScheduleList } from "./SchedulePanel";
 
 type TaskState = {
+  task_name: string;
   state: "active" | "paused";
   schedule_label: string | null;
   last_run_at: string | null;
@@ -25,7 +26,7 @@ type Props = {
   scheduledAgent: ScheduledAgent | null;
   teamUnlocked: boolean;
   usage: Usage;
-  task: TaskState | null;
+  tasks: TaskState[] | null;
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -41,7 +42,7 @@ export function AgentTabs({
   scheduledAgent,
   teamUnlocked,
   usage,
-  task,
+  tasks,
 }: Props) {
   const tabs = [
     { id: "overview", label: "Overview" },
@@ -152,12 +153,12 @@ export function AgentTabs({
         </div>
       )}
 
-      {active === "schedule" && scheduledAgent && task && (
+      {active === "schedule" && scheduledAgent && tasks && (
         <div role="tabpanel">
-          <SchedulePanel
+          <ScheduleList
             agent={scheduledAgent}
             agentName={content.name}
-            initial={task}
+            initial={tasks}
           />
         </div>
       )}

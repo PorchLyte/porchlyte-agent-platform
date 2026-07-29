@@ -296,20 +296,35 @@ export async function savePartial(
 // Scheduled tasks (Darla's brief, Rhonda's scan)
 // ---------------------------------------------------------------------------
 
-export async function getTaskState(db: Db, memberId: string, agent: ScheduledAgent) {
+/**
+ * Members can have several named scheduled tasks per agent in Cowork (a
+ * recurring morning brief, a one-off test run, etc.) — each is its own row,
+ * keyed by (member, agent, task_name). task_name is whatever the member
+ * named the task in Cowork; skills pass it back on every call so state and
+ * run history stay scoped to that specific task, not the agent as a whole.
+ */
+export async function getTaskState(
+  db: Db,
+  memberId: string,
+  agent: ScheduledAgent,
+  taskName: string
+) {
   await requireMember(db, memberId, "read");
   const { data, error } = await db
     .from("scheduled_tasks")
-    .select("agent, state, schedule_label, last_run_at, last_run_summary")
+    .select("agent, task_name, state, schedule_label, last_run_at, last_run_summary")
     .eq("member_id", memberId)
     .eq("agent", agent)
+    .eq("task_name", taskName)
     .maybeSingle();
   if (error) throw error;
 
-  // No row yet = nothing has paused it; scheduled skills treat this as active.
+  // No row yet = an unregistered task; scheduled skills treat this as active
+  // rather than blocking a run over a bookkeeping gap.
   return (
     data ?? {
       agent,
+      task_name: taskName,
       state: "active" as const,
       schedule_label: null,
       last_run_at: null,
@@ -322,6 +337,7 @@ export async function logTaskRun(
   db: Db,
   memberId: string,
   agent: ScheduledAgent,
+  taskName: string,
   summary: string
 ) {
   await requireMember(db, memberId, "write");
@@ -329,37 +345,102 @@ export async function logTaskRun(
     {
       member_id: memberId,
       agent,
+      task_name: taskName,
       last_run_at: new Date().toISOString(),
       last_run_summary: summary,
     },
-    { onConflict: "member_id,agent" }
+    { onConflict: "member_id,agent,task_name" }
   );
   if (error) throw error;
 
-  logUsage(db, memberId, "task_run", agent, { summary });
+  logUsage(db, memberId, "task_run", agent, { summary, task_name: taskName });
   return { ok: true as const };
 }
 
-/** Hub panel toggle: pause/resume a scheduled agent, update its label. */
+/**
+ * Called once, right after the member sets up a new scheduled task in
+ * Cowork. Idempotent: registering the same task_name again just returns its
+ * current state rather than resetting it, so a skill can call this
+ * defensively without risking un-pausing something the member turned off.
+ */
+export async function registerScheduledTask(
+  db: Db,
+  memberId: string,
+  agent: ScheduledAgent,
+  input: { task_name: string; schedule_label?: string }
+) {
+  await requireMember(db, memberId, "write");
+  const { data: existing, error: findError } = await db
+    .from("scheduled_tasks")
+    .select("task_name, state, schedule_label")
+    .eq("member_id", memberId)
+    .eq("agent", agent)
+    .eq("task_name", input.task_name)
+    .maybeSingle();
+  if (findError) throw findError;
+  if (existing) {
+    return { ok: true as const, already_registered: true as const, ...existing };
+  }
+
+  const { error } = await db.from("scheduled_tasks").insert({
+    member_id: memberId,
+    agent,
+    task_name: input.task_name,
+    state: "active",
+    ...(input.schedule_label ? { schedule_label: input.schedule_label } : {}),
+  });
+  if (error) throw error;
+
+  logUsage(db, memberId, "task_registered", agent, { task_name: input.task_name });
+  return {
+    ok: true as const,
+    already_registered: false as const,
+    task_name: input.task_name,
+    state: "active" as const,
+    schedule_label: input.schedule_label ?? null,
+  };
+}
+
+/** All named scheduled tasks for one agent — powers the hub's task list. */
+export async function getScheduledTasks(db: Db, memberId: string, agent: ScheduledAgent) {
+  await requireMember(db, memberId, "read");
+  const { data, error } = await db
+    .from("scheduled_tasks")
+    .select("task_name, state, schedule_label, last_run_at, last_run_summary")
+    .eq("member_id", memberId)
+    .eq("agent", agent)
+    .order("task_name");
+  if (error) throw error;
+  return data;
+}
+
+/** Hub panel toggle: pause/resume one named scheduled task, update its label. */
 export async function setTaskState(
   db: Db,
   memberId: string,
   agent: ScheduledAgent,
+  taskName: string,
   input: { state?: "active" | "paused"; schedule_label?: string }
 ) {
   await requireMember(db, memberId, "write");
-  const { error } = await db.from("scheduled_tasks").upsert(
-    {
-      member_id: memberId,
-      agent,
-      ...(input.state ? { state: input.state } : {}),
-      ...(input.schedule_label !== undefined
-        ? { schedule_label: input.schedule_label }
-        : {}),
-    },
-    { onConflict: "member_id,agent" }
-  );
+  const { error, count } = await db
+    .from("scheduled_tasks")
+    .update(
+      {
+        ...(input.state ? { state: input.state } : {}),
+        ...(input.schedule_label !== undefined
+          ? { schedule_label: input.schedule_label }
+          : {}),
+      },
+      { count: "exact" }
+    )
+    .eq("member_id", memberId)
+    .eq("agent", agent)
+    .eq("task_name", taskName);
   if (error) throw error;
+  if (!count) {
+    throw new PlatformError(`No scheduled task named "${taskName}" for ${agent}.`, "member_not_found");
+  }
   return { ok: true as const };
 }
 
