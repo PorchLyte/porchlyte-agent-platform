@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connect + Migrate — PorchLyte Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --tan: #d7c8ba;
+    --tan-soft: #e8ddd1;
+    --tan-warm: #cbaf97;
+    --tan-deep: #b9a691;
+    --icon: #a08b73;
+    --ink: #282722;
+    --ink-soft: #5a564e;
+    --cream: #efeae3;
+    --white: #ffffff;
+    --shadow: 0 1px 2px rgba(40, 39, 34, 0.04), 0 8px 24px rgba(40, 39, 34, 0.06);
+    --shadow-lift: 0 1px 2px rgba(40, 39, 34, 0.06), 0 16px 40px rgba(40, 39, 34, 0.12);
+  }
+
+  /* === CENTERED COLUMN ===
+     The page lives inside whatever container Elementor / the theme provides.
+     We keep a comfortable, readable column width and let it center naturally,
+     matching the original AI Kit Hub layout. */
+
+  /* Full-bleed cream background wrapper - extends edge-to-edge of viewport
+     while inner .page content stays at 1180px max-width centered */
+  .page-bg,
+  body .page-bg,
+  .entry-content .page-bg,
+  .elementor-widget-container .page-bg {
+    background: #efeae3 !important;
+    background-color: #efeae3 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: calc(50% - 50vw) !important;
+    margin-right: calc(50% - 50vw) !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Prevent horizontal scroll from the breakout */
+  html, body {
+    overflow-x: hidden !important;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  /* === WordPress theme compatibility overrides ===
+     Themes often override fonts and colors on h1, h2, p, and content containers.
+     These rules force our styles to win. */
+
+  body .page,
+  .entry-content .page,
+  .wp-block-html .page {
+    max-width: 1180px !important;
+    margin: 0 auto !important;
+    padding: 80px 32px 120px !important;
+    font-family: 'Poppins', sans-serif !important;
+    color: var(--ink) !important;
+    background-color: transparent !important;
+    line-height: 1.65 !important;
+  }
+
+  body .page h1,
+  body .page h2,
+  body .page .step-num,
+  body .page .compare-label,
+  body .page .feedback h2,
+  body .page .signoff .name,
+  body .page .eyebrow,
+  body .page .tip-label,
+  body .page .faq-icon {
+    font-family: 'Impact', 'Arial Narrow', sans-serif !important;
+    font-weight: 400 !important;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
+  body .page h1 { text-transform: none !important; }
+  body .page h2 { text-transform: none !important; }
+  body .page .eyebrow,
+  body .page .tip-label,
+  body .page .feedback h2 { text-transform: uppercase !important; }
+
+  body .page p,
+  body .page .step-title,
+  body .page .step-desc,
+  body .page .hero-intro,
+  body .page .download-btn,
+  body .page .review-btn,
+  body .page .feedback p,
+  body .page .feedback-eyebrow {
+    font-family: 'Poppins', sans-serif !important;
+  }
+
+  body .page a { text-decoration: none; }
+  body .page .download-btn { color: var(--cream) !important; }
+  body .page .review-btn { color: var(--ink) !important; }
+  body .page .review-btn:hover { color: var(--cream) !important; }
+
+  /* Try to escape narrow theme containers */
+  .entry-content > .wp-block-html,
+  article > .wp-block-html,
+  .post-content > .wp-block-html {
+    max-width: none !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.65;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 80px 32px 120px;
+  }
+
+  a { color: inherit; }
+
+  /* --- HERO --- */
+  .hero { margin-bottom: 72px; }
+
+  .eyebrow {
+    font-family: 'Impact', 'Arial Narrow', sans-serif;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-bottom: 56px;
+    font-weight: 400;
+    display: inline-block;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--tan-warm);
+  }
+
+  h1 {
+    font-family: 'Impact', 'Arial Narrow', sans-serif;
+    font-size: clamp(60px, 11vw, 130px);
+    line-height: 0.95;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    margin-bottom: 56px;
+    color: var(--ink);
+  }
+
+  h1 .hero-accent { color: var(--tan-warm); }
+  body .page h1 .hero-accent { color: var(--tan-warm) !important; }
+
+  .hero-intro {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--ink);
+    max-width: 620px;
+  }
+
+  .hero-intro + .hero-intro { margin-top: 22px; }
+
+  /* --- SECTIONS --- */
+  .section { margin-top: 80px; }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--tan);
+  }
+
+  .section-header h2 {
+    font-family: 'Impact', 'Arial Narrow', sans-serif;
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .section-hint {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 28px;
+    font-style: italic;
+  }
+
+  /* --- DOWNLOAD BUTTON --- */
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    background: var(--ink);
+    color: var(--cream);
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 13px 22px;
+    border-radius: 3px;
+    transition: background 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .download-btn:hover { background: #3a3833; transform: translateY(-1px); }
+
+  .download-btn svg {
+    width: 13px;
+    height: 13px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* --- PROGRESS --- */
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--tan-soft);
+    border-radius: 2px;
+    overflow: hidden;
+    width: 180px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--ink);
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+
+  /* --- CHECKLIST --- */
+  .step {
+    background: var(--white);
+    border-radius: 4px;
+    padding: 32px 32px 32px 28px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 24px;
+    align-items: start;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-left: 4px solid var(--tan);
+  }
+
+  .step:hover { box-shadow: var(--shadow-lift); }
+  .step.checked { opacity: 0.55; }
+  .step.checked .step-title {
+    text-decoration: line-through;
+    text-decoration-color: var(--tan-warm);
+    text-decoration-thickness: 1px;
+  }
+
+  .step-num {
+    font-family: 'Impact', 'Arial Narrow', sans-serif;
+    font-size: 48px;
+    line-height: 1;
+    color: var(--tan-warm);
+    font-weight: 400;
+    min-width: 50px;
+    transition: color 0.2s ease;
+  }
+
+  .step.checked .step-num { color: var(--tan); }
+
+  .step-body { display: flex; flex-direction: column; gap: 10px; }
+
+  .step-top { display: flex; align-items: flex-start; gap: 16px; }
+
+  .step-title {
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.4;
+    flex: 1;
+  }
+
+  .step-desc { font-size: 15.5px; color: var(--ink-soft); line-height: 1.65; }
+  .step-desc strong { color: var(--ink); font-weight: 600; }
+
+  /* --- CHECKBOX --- */
+  .checkbox {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--tan-warm);
+    border-radius: 4px;
+    background: var(--white);
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    margin-top: 2px;
+    transition: all 0.2s ease;
+  }
+
+  .checkbox:hover { border-color: var(--ink); }
+  .checkbox.checked { background: var(--ink); border-color: var(--ink); }
+  .checkbox.checked::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 12px;
+    border: solid var(--cream);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  /* --- TIP CALLOUT --- */
+  .tip { background: var(--tan); border-radius: 4px; padding: 24px 28px; margin-top: 14px; }
+  .tip-label {
+    font-family: 'Impact', 'Arial Narrow', sans-serif;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .tip-body { font-size: 15px; color: var(--ink); line-height: 1.65; }
+
+  /* --- HEADS UP CALLOUT --- */
+  .heads-up,
+  body .page .heads-up,
+  .entry-content .heads-up,
+  .wp-block-html .heads-up,
+  .elementor-widget-container .heads-up {
+    background: #d7c8ba !important;
+    background-color: #d7c8ba !important;
+    background-image: none !important;
+    border-radius: 4px !important;
+    padding: 40px 44px !important;
+    margin-top: 80px !important;
+    box-sizing: border-box !important;
+    display: block !important;
+  }
+
+  .heads-up-eyebrow {
+    font-family: 'Impact', 'Arial Narrow', sans-serif;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: var(--ink);
+    margin-bottom: 14px;
+    font-weight: 400;
+  }
+
+  .heads-up-title {
+    font-family: 'Impact', 'Arial Narrow', sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.15;
+  }
+
+  .heads-up p { font-size: 15.5px; line-height: 1.65; color: var(--ink); margin-bottom: 14px; max-width: 700px; }
+  .heads-up p:last-child { margin-bottom: 0; }
+  .heads-up p strong { font-weight: 600; color: var(--ink); }
+
+  body .page .heads-up-title {
+    font-family: 'Impact', 'Arial Narrow', sans-serif !important;
+    font-weight: 400 !important;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+  body .page .heads-up-eyebrow {
+    font-family: 'Impact', 'Arial Narrow', sans-serif !important;
+    text-transform: uppercase !important;
+    font-weight: 400 !important;
+  }
+
+  /* --- COMPARE GRID (what's different) --- */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .compare-card { background: var(--white); border-radius: 4px; padding: 30px 28px; box-shadow: var(--shadow); }
+  .compare-card.now { background: var(--tan); }
+  .compare-label {
+    font-family: 'Impact', 'Arial Narrow', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+  }
+  .compare-card.now .compare-label { color: var(--ink); }
+  .compare-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .compare-list li {
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    padding-left: 18px;
+    position: relative;
+  }
+  .compare-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--tan-warm);
+  }
+  .compare-card.now .compare-list li { color: var(--ink); }
+  .compare-card.now .compare-list li::before { color: var(--ink-soft); }
+
+  @media (max-width: 720px) { .compare-grid { grid-template-columns: 1fr; } }
+
+  /* --- FAQ --- */
+  .faq-item { background: var(--white); border-radius: 4px; margin-bottom: 8px; box-shadow: var(--shadow); overflow: hidden; }
+  .faq-item summary {
+    padding: 22px 28px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--ink);
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    transition: background 0.15s ease;
+  }
+  .faq-item summary:hover { background: var(--tan-soft); }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-icon {
+    font-family: 'Impact', 'Arial Narrow', sans-serif;
+    font-size: 24px;
+    color: var(--tan-warm);
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    width: 16px;
+    text-align: center;
+  }
+  .faq-item[open] .faq-icon { transform: rotate(45deg); }
+  .faq-body { padding: 0 28px 24px; font-size: 15.5px; color: var(--ink-soft); line-height: 1.7; }
+
+  /* --- SIGNOFF --- */
+  .signoff { margin-top: 64px; padding: 40px 0 0; border-top: 1px solid var(--tan); }
+  .signoff p { font-size: 16.5px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 16px; }
+  .signoff .name { font-family: 'Impact', 'Arial Narrow', sans-serif; font-size: 22px; color: var(--ink); letter-spacing: 0.01em; margin-top: 8px; }
+  .signoff .legal { font-size: 12px; color: var(--ink-soft); margin-top: 24px; font-style: italic; }
+
+  /* --- COMMAND BLOCKS --- */
+  .cmd-block { margin-top: 14px; }
+  .cmd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--ink);
+    border-radius: 4px;
+    padding: 15px 16px 15px 20px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .cmd code {
+    font-family: 'SFMono-Regular', ui-monospace, Menlo, Consolas, 'Liberation Mono', monospace;
+    font-size: 14px;
+    color: var(--cream);
+    white-space: nowrap;
+    overflow-x: auto;
+    flex: 1;
+    letter-spacing: 0.01em;
+  }
+  body .page .cmd code {
+    color: var(--cream) !important;
+    font-family: 'SFMono-Regular', ui-monospace, Menlo, Consolas, monospace !important;
+  }
+  .cmd-copy {
+    flex-shrink: 0;
+    background: var(--tan-warm);
+    color: var(--ink);
+    border: none;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 9px 14px;
+    border-radius: 3px;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .cmd-copy:hover { background: var(--cream); transform: translateY(-1px); }
+  .cmd-copy.copied { background: var(--cream); }
+
+  .section-note { font-size: 15px; color: var(--ink-soft); line-height: 1.65; max-width: 700px; margin-top: 14px; }
+
+  /* --- MOBILE --- */
+  @media (max-width: 720px) {
+    .page { padding: 56px 22px 80px; }
+    .hero { margin-bottom: 56px; }
+    .section { margin-top: 56px; }
+    .section-header { flex-direction: column; align-items: flex-start; gap: 18px; }
+    .progress-bar { width: 140px; }
+    .step { padding: 24px 22px 24px 20px; gap: 16px; }
+    .step-num { font-size: 36px; min-width: 36px; }
+    .step-title { font-size: 17px; }
+    .faq-item summary { padding: 18px 22px; font-size: 15px; }
+    .faq-body { padding: 0 22px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page-bg" style="background:#efeae3 !important;background-color:#efeae3 !important;width:100vw !important;position:relative !important;left:50% !important;right:50% !important;margin-left:-50vw !important;margin-right:-50vw !important;padding:0 !important;box-sizing:border-box !important;">
+
+<main class="page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="eyebrow">PorchLyte Hub &middot; The Upgrade</div>
+    <h1>YOUR TEAM JUST<br>GOT <span class="hero-accent">A HOME.</span></h1>
+    <p class="hero-intro">Voice, Brand, Local, and your nine-agent team now live in your PorchLyte account — not just inside one Claude chat you have to keep finding again. Connect once, and everything you've already built comes with you.</p>
+    <p class="hero-intro">This replaces the two separate marketplace installs (Foundation and Team) with one connector and one plugin. About ten minutes, and nothing you've already set up gets lost.</p>
+  </section>
+
+  <!-- CONNECT + MIGRATE CHECKLIST -->
+  <section class="section">
+    <div class="section-header">
+      <h2>Connect + migrate</h2>
+      <div class="progress">
+        <span id="progress-text">0 of 5 complete</span>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+    </div>
+
+    <div class="step" data-step="1">
+      <div class="step-num">01</div>
+      <div class="step-body">
+        <div class="step-top">
+          <div class="checkbox" data-checkbox="1"></div>
+          <div class="step-title">Sign in to your PorchLyte Hub.</div>
+        </div>
+        <div class="step-desc">Go to <strong>aiagents.porchlyte.com</strong> and sign in with the email on your PorchLyte membership. No password — you'll get a one-time code by email.</div>
+        <div style="margin-top: 10px;">
+          <a class="download-btn" href="https://aiagents.porchlyte.com" target="_blank" rel="noreferrer">Open the Hub</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="2">
+      <div class="step-num">02</div>
+      <div class="step-body">
+        <div class="step-top">
+          <div class="checkbox" data-checkbox="2"></div>
+          <div class="step-title">Add the PorchLyte connector in Claude.</div>
+        </div>
+        <div class="step-desc">In Claude or Cowork, go to <strong>Settings &gt; Connectors &gt; Add custom connector</strong>. Paste the URL below, click <strong>Connect</strong>, then sign in with the same email you used on the Hub.</div>
+        <div class="cmd-block">
+          <div class="cmd"><code>https://aiagents.porchlyte.com/api/mcp/mcp</code><button class="cmd-copy" type="button" data-copy="https://aiagents.porchlyte.com/api/mcp/mcp">Copy</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="3">
+      <div class="step-num">03</div>
+      <div class="step-body">
+        <div class="step-top">
+          <div class="checkbox" data-checkbox="3"></div>
+          <div class="step-title">Install the new plugin.</div>
+        </div>
+        <div class="step-desc">One plugin now covers what used to be two separate marketplaces: Voice, Brand, Local, and all nine agents. Download it from the Hub and install it from file in Claude's plugin panel.</div>
+        <div style="margin-top: 10px;">
+          <a class="download-btn" href="https://aiagents.porchlyte.com/downloads/porchlyte-claude-plugin.zip" download>Download the plugin</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="4">
+      <div class="step-num">04</div>
+      <div class="step-body">
+        <div class="step-top">
+          <div class="checkbox" data-checkbox="4"></div>
+          <div class="step-title">Already set up? Bring it with you.</div>
+        </div>
+        <div class="step-desc">If you already built your Voice, Brand, or Local profile, or hired any team members, open the <strong>exact chat or project</strong> where you did that — that's where the memory to recover actually is — and run the command below, right there.</div>
+        <div class="cmd-block">
+          <div class="cmd"><code>/migrate</code><button class="cmd-copy" type="button" data-copy="/migrate">Copy</button></div>
+        </div>
+        <div class="step-desc">Claude reconstructs what you already told it and saves it straight to your new account. No redoing an interview you already sat through.</div>
+        <div class="tip">
+          <div class="tip-label">Tip</div>
+          <div class="tip-body">Set up Voice in one chat and hired your team in a different one? Run <strong>/migrate</strong> in each one. It's safe to run more than once — anything already saved to your account gets left alone.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="5">
+      <div class="step-num">05</div>
+      <div class="step-body">
+        <div class="step-top">
+          <div class="checkbox" data-checkbox="5"></div>
+          <div class="step-title">Delete the old marketplaces completely.</div>
+        </div>
+        <div class="step-desc">First, check your Hub dashboard (or ask Claude for <strong>get_setup_status</strong>) to confirm everything you expect shows up. Then remove the old <strong>porchlyte-foundations</strong> and <strong>porchlyte-agents</strong> marketplaces from <strong>Customize &gt; Plugins</strong> — don't just leave them installed.</div>
+        <div class="step-desc">Those two are frozen where they are and will never update again, so there's nothing to gain by keeping them. Worse, running both at once means two versions of the same skill can trigger on the same request — one reading old chat memory, one reading your real account — which gets confusing fast. Once you've migrated, the old ones only get in the way.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT'S DIFFERENT -->
+  <section class="section">
+    <div class="section-header">
+      <h2>What's actually different</h2>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-label">Before</div>
+        <ul class="compare-list">
+          <li>Two separate marketplace installs: Foundation, then Team</li>
+          <li>Voice, Brand, Local, and hires only live in the chat or project where you set them up</li>
+          <li>Open a new chat, and your team doesn't know you yet</li>
+        </ul>
+      </div>
+      <div class="compare-card now">
+        <div class="compare-label">Now</div>
+        <ul class="compare-list">
+          <li>One connector, one plugin — Foundation and Team together</li>
+          <li>Everything saves to your PorchLyte account, viewable and editable at aiagents.porchlyte.com</li>
+          <li>Open any new chat, anywhere, and your team already knows you</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRIFECTA NOTE -->
+  <div class="heads-up">
+    <div class="heads-up-eyebrow">Using the Real Estate Trifecta?</div>
+    <div class="heads-up-title">Nothing changes there</div>
+    <p>Buyer Consultation, Listing Presentation, and Closing Day aren't part of this upgrade. They keep working exactly like they do today, installed from their own marketplace (<strong>PorchLyte/real-estate-trifecta</strong>). No new install, no migration needed.</p>
+  </div>
+
+  <!-- FAQ -->
+  <section class="section">
+    <div class="section-header">
+      <h2>FAQ</h2>
+    </div>
+
+    <details class="faq-item">
+      <summary>Do I have to redo my Voice, Brand, or Local interviews?<span class="faq-icon">+</span></summary>
+      <div class="faq-body">No. Run <strong>/migrate</strong> in the chat or project where you did them, and Claude reconstructs what you already told it, shows it to you to confirm, and saves it to your account.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>What if /migrate can't find something?<span class="faq-icon">+</span></summary>
+      <div class="faq-body">It'll say so plainly instead of guessing or inventing an answer. From there you can run the short interview again — this time it saves to your account for good, not just to that one chat.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Do I still need the old porchlyte-foundations and porchlyte-agents marketplaces?<span class="faq-icon">+</span></summary>
+      <div class="faq-body">No — delete them once you've migrated. They're stuck on an old version for good (a plugin update bug means they never pull new changes), so keeping them around gains you nothing. Worse, leaving both installed means two versions of the same skill can respond to the same request — the new plugin covers everything they did.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Is the Real Estate Trifecta part of this?<span class="faq-icon">+</span></summary>
+      <div class="faq-body">No. It's a separate add-on and keeps working the way it always has, installed on its own from the real-estate-trifecta marketplace.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Do I still need Claude Pro, the desktop app, and the Chrome extension?<span class="faq-icon">+</span></summary>
+      <div class="faq-body">Yes — nothing about your Claude account changes. This upgrade only changes where your profiles live: your PorchLyte account instead of one chat.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>What if a slash command doesn't work?<span class="faq-icon">+</span></summary>
+      <div class="faq-body">First, confirm the new plugin is installed and the PorchLyte connector shows as connected under Settings &gt; Connectors. Second, type the full command in a brand new chat. Third, close and reopen the desktop app.</div>
+    </details>
+  </section>
+
+  <!-- SIGNOFF -->
+  <section class="signoff">
+    <p>Once you've connected and migrated, everything your team knows about you lives in your PorchLyte account instead of one chat you have to keep finding again. Come tell us inside the group how it went.</p>
+    <div class="name">Tracy : )</div>
+    <p class="legal">PorchLyte AI Agents are proprietary and for licensed PorchLyte members only. Please don't share or redistribute.</p>
+  </section>
+
+</main>
+
+</div>
+<script>
+  const STORAGE_KEY = 'ash-connect-migrate-v1';
+  const totalSteps = 5;
+
+  function loadProgress() {
+    try { const saved = localStorage.getItem(STORAGE_KEY); return saved ? JSON.parse(saved) : {}; }
+    catch (e) { return {}; }
+  }
+  function saveProgress(state) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+  function updateProgressUI(state) {
+    const completed = Object.values(state).filter(Boolean).length;
+    document.getElementById('progress-text').textContent = `${completed} of ${totalSteps} complete`;
+    document.getElementById('progress-fill').style.width = `${(completed / totalSteps) * 100}%`;
+  }
+  function applyState(state) {
+    document.querySelectorAll('.checkbox').forEach(box => {
+      const id = box.dataset.checkbox;
+      const step = box.closest('.step');
+      if (state[id]) { box.classList.add('checked'); step.classList.add('checked'); }
+      else { box.classList.remove('checked'); step.classList.remove('checked'); }
+    });
+    updateProgressUI(state);
+  }
+  const state = loadProgress();
+  applyState(state);
+  document.querySelectorAll('.checkbox').forEach(box => {
+    box.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = box.dataset.checkbox;
+      state[id] = !state[id];
+      saveProgress(state);
+      applyState(state);
+    });
+  });
+
+  // Copy-to-clipboard for command blocks
+  document.querySelectorAll('.cmd-copy').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const text = btn.dataset.copy;
+      try { await navigator.clipboard.writeText(text); }
+      catch (err) {
+        const t = document.createElement('textarea');
+        t.value = text; t.setAttribute('readonly', '');
+        t.style.position = 'absolute'; t.style.left = '-9999px';
+        document.body.appendChild(t); t.select();
+        try { document.execCommand('copy'); } catch (e2) {}
+        document.body.removeChild(t);
+      }
+      const orig = btn.textContent;
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1600);
+    });
+  });
+</script>
+</body>
+</html>

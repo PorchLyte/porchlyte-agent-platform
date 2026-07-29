@@ -35,3 +35,10 @@ curl -s https://aiagents.porchlyte.com/.well-known/oauth-protected-resource
 - Source: `claude-plugin/porchlyte-ai-agent-hub/`
 - Zip: `public/downloads/porchlyte-claude-plugin.zip`
 - Rebuild: `npm run build:plugin-zip`
+
+## Member-facing instructions page (no login required)
+
+- Source: `public/connect-and-migrate.html` — served statically, no auth, safe to link directly
+- Live: `https://aiagents.porchlyte.com/connect-and-migrate.html`
+- Covers: connect the connector, install the new plugin, run `/migrate` in the old chat/project, delete the old `porchlyte-foundations` / `porchlyte-agents` marketplaces (they're frozen by the Cowork plugin-cache bug and never update)
+- Edit directly and redeploy — no build step
