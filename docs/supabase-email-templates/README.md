@@ -37,8 +37,8 @@ Not set in these HTML files — configure under SMTP. See [REPLY-TO.md](./REPLY-
 
 ## Brand notes
 
-Warm cream / tan / ink palette. Wordmark is HTML text (most reliable in email). To use a hosted logo later, replace the wordmark block in any `body.html` with:
+Warm cream / tan / ink palette. Templates use the PorchLyte logo from:
 
-```html
-<img src="https://aiagents.porchlyte.com/porchlyte-logo.png" width="160" alt="PorchLyte" style="display:block;border:0;margin:0 0 8px;" />
-```
+`public/brand/porchlyte-logo.png` → `https://aiagents.porchlyte.com/brand/porchlyte-logo.png`
+
+That URL must be live (deployed) for the logo to show in emails. Source: porchlyte.com secondary wordmark with tagline.
