@@ -83,8 +83,7 @@ function TaskCard({
     <div className="pl-card" style={{ marginBottom: 16 }}>
       <div className="pl-card-title">{task.task_name}</div>
       <p className="pl-card-body" style={{ marginBottom: 16, marginTop: 4 }}>
-        {agentName} checks this specific task before it runs and stays quiet
-        while it&apos;s paused.
+        {`${agentName} checks this specific task before it runs and stays quiet while it's paused.`}
       </p>
       <div className="pl-schedule">
         <div className="pl-schedule-row">
