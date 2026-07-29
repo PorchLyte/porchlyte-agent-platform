@@ -35,6 +35,9 @@ Either way, confirm the **porchlyte** MCP server is connected (OAuth to aiagents
 
 ## Version
 
+2.0.2 — skills now recognize a stale connector tool list and ask you to refresh
+it, instead of reporting the feature as unsupported.
+
 2.0.1 — per-task scheduling: Darla and Rhonda register each scheduled task on
 your hub, check that specific task before it runs, and log its last run there.
 

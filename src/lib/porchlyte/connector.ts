@@ -1,4 +1,4 @@
-export const PLUGIN_VERSION = "2.0.1";
+export const PLUGIN_VERSION = "2.0.2";
 
 /** Streamable HTTP MCP endpoint for Claude custom connectors + plugin. */
 export const MCP_CONNECTOR_URL = "https://aiagents.porchlyte.com/api/mcp/mcp";

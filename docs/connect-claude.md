@@ -32,6 +32,26 @@ curl -sI https://aiagents.porchlyte.com/api/mcp/mcp
 curl -s https://aiagents.porchlyte.com/.well-known/oauth-protected-resource
 ```
 
+To see what tools production is *actually* serving (ground truth, read-only):
+
+```bash
+MCP_BASE=https://aiagents.porchlyte.com/api/mcp/mcp ./scripts/mcp-door-test.sh
+```
+
+Note that script also writes test data; for a pure read, do `initialize` then
+`tools/list` with a token from `node scripts/get-test-token.mjs`.
+
+### Gotcha: clients cache the tool list
+
+Claude caches an MCP server's tool list per session. After deploying a tool
+change (new tool, new parameter), an already-connected session keeps showing
+the **old** tools and will insist the new ones "don't exist" — even though the
+server is correct. This is a client-side cache, not a deploy problem.
+
+Confirm with `tools/list` against production before believing a session's
+report. Fix is to refresh the tool list / reconnect the connector. Expect
+members to hit this after any MCP tool change; it resolves on reconnect.
+
 ## Plugin source
 
 - Source: `claude-plugin/porchlyte-ai-agent-hub/` — single source of truth for both install paths. Edit here, nowhere else.

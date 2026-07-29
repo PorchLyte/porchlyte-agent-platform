@@ -13,6 +13,8 @@ The member's Foundations and hired-agent profiles live in their PorchLyte accoun
 3. For a hired agent (Darla, Chloe, etc.): call `get_team_member` with that agent id. If not hired, offer the hire interview here, or point them to https://aiagents.porchlyte.com to hire from the hub — then `save_team_member` on confirmation.
 4. When they correct something about their voice, brand, market, or an agent: update via `save_foundation` or `save_team_member` immediately.
 
+**If a tool this skill names is missing**, and the connector is otherwise connected and working, the tool list is cached from earlier in the session — it is not a broken or outdated backend. Do not work around it, do not tell them the feature is unsupported, and do not invent a substitute. Ask them to refresh the connector's tools (or disconnect and reconnect it), then retry the call.
+
 **Local files are fallback only** if the connector is unavailable. Prefer the connector every time. Do not invent profiles.
 
 ---
