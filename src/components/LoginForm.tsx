@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+type Mode = "code" | "password";
 type Step = "email" | "code";
 
 export function LoginForm() {
@@ -12,8 +13,10 @@ export function LoginForm() {
   const redirectTo = params.get("redirect") || "/dashboard";
   const authError = params.get("error");
 
+  const [mode, setMode] = useState<Mode>("code");
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(
     authError === "magic_link"
@@ -72,6 +75,29 @@ export function LoginForm() {
       // Same UX either way — don't reveal whether the email is on the list.
       setError(null);
     }
+  }
+
+  async function onPasswordSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmed = email.trim().toLowerCase();
+    if (!trimmed || password.length < 8) {
+      setError("Enter your email and password.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithPassword({
+      email: trimmed,
+      password,
+    });
+    setBusy(false);
+    if (error) {
+      setError("That email or password didn't work. Try again, or use a sign-in code.");
+      return;
+    }
+    router.push(nextPath());
+    router.refresh();
   }
 
   async function verifyToken(token: string) {
@@ -134,6 +160,20 @@ export function LoginForm() {
     codeRef.current?.form?.requestSubmit();
   }, [code, step, busy]);
 
+  function switchToPassword() {
+    setMode("password");
+    setStep("email");
+    setCode("");
+    setError(null);
+    setSentNotice(false);
+  }
+
+  function switchToCode() {
+    setMode("code");
+    setPassword("");
+    setError(null);
+  }
+
   return (
     <div className="pl-auth">
       <div className="pl-auth-card">
@@ -144,7 +184,59 @@ export function LoginForm() {
           <div className="pl-brand-sub">AI Agent Hub</div>
         </div>
 
-        {step === "email" ? (
+        {mode === "password" ? (
+          <form onSubmit={onPasswordSubmit}>
+            <p className="pl-auth-lead">
+              Sign in with the email and temporary password from PorchLyte
+              support.
+            </p>
+            <div className="pl-field">
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                className="pl-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                required
+              />
+            </div>
+            <div className="pl-field">
+              <label htmlFor="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                className="pl-input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+                minLength={8}
+              />
+            </div>
+            <button
+              type="submit"
+              className="pl-btn pl-btn-primary"
+              disabled={busy}
+              style={{ width: "100%", justifyContent: "center" }}
+            >
+              {busy ? "Signing in…" : "Sign in"}
+            </button>
+            {error && <p className="pl-error">{error}</p>}
+            <div className="pl-auth-actions">
+              <button
+                type="button"
+                className="pl-btn pl-btn-ghost"
+                disabled={busy}
+                onClick={switchToCode}
+                style={{ width: "100%" }}
+              >
+                Use sign-in code instead
+              </button>
+            </div>
+          </form>
+        ) : step === "email" ? (
           <form onSubmit={onEmailSubmit}>
             <p className="pl-auth-lead">
               Enter the email on your PorchLyte membership. We&apos;ll send a
@@ -171,6 +263,17 @@ export function LoginForm() {
               {busy ? "Sending…" : "Send sign-in code"}
             </button>
             {error && <p className="pl-error">{error}</p>}
+            <div className="pl-auth-actions">
+              <button
+                type="button"
+                className="pl-btn pl-btn-ghost"
+                disabled={busy}
+                onClick={switchToPassword}
+                style={{ width: "100%" }}
+              >
+                Use password instead
+              </button>
+            </div>
           </form>
         ) : (
           <form onSubmit={onCodeSubmit}>
@@ -245,6 +348,17 @@ export function LoginForm() {
                 }}
               >
                 Different email
+              </button>
+            </div>
+            <div className="pl-auth-actions">
+              <button
+                type="button"
+                className="pl-btn pl-btn-ghost"
+                disabled={busy}
+                onClick={switchToPassword}
+                style={{ width: "100%" }}
+              >
+                Use password instead
               </button>
             </div>
           </form>

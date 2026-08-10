@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { getAdminContext } from "@/lib/porchlyte/portal-auth";
 import { AGENTS, FOUNDATIONS, FOUNDATION_ORDER } from "@/lib/porchlyte/content";
 import { isFoundationKind, isTeamAgent } from "@/lib/porchlyte/constants";
+import { AdminSetPassword } from "@/components/AdminSetPassword";
 
 export default async function AdminMemberPage({
   params,
@@ -48,11 +49,10 @@ export default async function AdminMemberPage({
         <p className="pl-page-sub">
           {member.email} · {member.plan} · {member.status}
         </p>
-        <div className="pl-diag" style={{ marginTop: 14 }}>
-          Read-only view. Editing a member&apos;s profiles with their consent is
-          audit-logged and coming next.
-        </div>
       </div>
+
+      <div className="pl-section-label">Access</div>
+      <AdminSetPassword memberId={member.id} email={member.email} />
 
       <div className="pl-section-label">Foundations</div>
       {FOUNDATION_ORDER.filter(isFoundationKind).map((kind) => {

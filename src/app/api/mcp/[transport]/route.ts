@@ -119,7 +119,7 @@ const handler = createMcpHandler(
 
     server.tool(
       "get_team_member",
-      "Get one team member's profile for the signed-in member. Status not_hired means the member hasn't hired this agent yet — offer to run the hiring interview right here in chat, or point them to porchlyte.com.",
+      "Get one team member's profile for the signed-in member. Status not_hired means the member hasn't hired this agent yet — offer to run the hiring interview right here in chat, or point them to https://aiagents.porchlyte.com to hire from the hub.",
       { agent: agentSchema },
       async (args, extra) =>
         run(extra, (db, memberId) => getTeamMember(db, memberId, args.agent))
