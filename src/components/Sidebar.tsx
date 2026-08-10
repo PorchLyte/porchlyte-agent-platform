@@ -128,6 +128,14 @@ export function Sidebar({
           Admin
         </Link>
       )}
+      <a
+        href="/dashboard/setup"
+        className="pl-nav-item"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Setup instructions
+      </a>
       <Link href="/dashboard/account" className={`pl-nav-item${pathname === "/dashboard/account" ? " active" : ""}`}>
         Account
       </Link>
