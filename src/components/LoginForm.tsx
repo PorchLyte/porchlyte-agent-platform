@@ -12,8 +12,11 @@ export function LoginForm() {
   const params = useSearchParams();
   const redirectTo = params.get("redirect") || "/dashboard";
   const authError = params.get("error");
+  const modeParam = params.get("mode");
 
-  const [mode, setMode] = useState<Mode>("code");
+  const [mode, setMode] = useState<Mode>(
+    modeParam === "password" ? "password" : "code"
+  );
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
