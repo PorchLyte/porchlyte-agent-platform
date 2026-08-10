@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getPortalContext } from "@/lib/porchlyte/portal-auth";
 import { AccountControls } from "@/components/AccountControls";
+import { AccountSetPassword } from "@/components/AccountSetPassword";
 
 const PLAN_LABEL: Record<string, string> = {
   foundations: "Foundations",
@@ -66,6 +67,9 @@ export default async function AccountPage() {
           sync here automatically.
         </p>
       </div>
+
+      <div className="pl-section-label">Sign-in</div>
+      <AccountSetPassword />
 
       <div className="pl-section-label">Claude connection</div>
       <div className="pl-card">
