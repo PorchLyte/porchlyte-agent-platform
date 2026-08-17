@@ -11,7 +11,8 @@ The member's Foundations and hired-agent profiles live in their PorchLyte accoun
 1. Call `get_setup_status` on the PorchLyte connector if you need a quick picture of what's saved.
 2. For Voice / Brand / Local: call `get_foundations`. Use the returned prose. If a foundation is `empty` or missing, tell them the fastest setup is at https://aiagents.porchlyte.com — or offer the interview here, then `save_foundation` on confirmation.
 3. For a hired agent (Darla, Chloe, etc.): call `get_team_member` with that agent id. If not hired, offer the hire interview here, or point them to https://aiagents.porchlyte.com to hire from the hub — then `save_team_member` on confirmation.
-4. When they correct something about their voice, brand, market, or an agent: update via `save_foundation` or `save_team_member` immediately.
+4. For the buildable half of Brand — exact hex codes, named fonts, logo files: call `get_brand_kit`. Save changes with `save_brand_kit`. Logo and headshot files can only be uploaded on the hub, at https://aiagents.porchlyte.com/dashboard/brand-kit.
+5. When they correct something about their voice, brand, market, or an agent: update via `save_foundation` or `save_team_member` immediately.
 
 **If a tool this skill names is missing**, and the connector is otherwise connected and working, the tool list is cached from earlier in the session — it is not a broken or outdated backend. Do not work around it, do not tell them the feature is unsupported, and do not invent a substitute. Ask them to refresh the connector's tools (or disconnect and reconnect it), then retry the call.
 
@@ -47,7 +48,11 @@ Q9. How much do you show up in your own content? (Heavily, occasionally, rarely,
 
 Q10. What would the wrong version of your brand look like? (Sharpens the contrast.)
 
-After the interview, write their Brand profile in plain prose. No bullets. No headers. Start with "Your brand is..." Use their actual color codes, font names, references, and exact words. Don't summarize. Don't generalize. Don't add anything they didn't say. Write the profile to Brand on the connector, creating the porchlyte folder in their home folder if it doesn't exist. That exact path matters: it lives outside the plugin so a plugin update never wipes it, and every skill on the AI Agent Team reads it from there.
+After the interview, write their Brand profile in plain prose. No bullets. No headers. Start with "Your brand is..." Use their actual color codes, font names, references, and exact words. Don't summarize. Don't generalize. Don't add anything they didn't say. Save it with `save_foundation` (kind: brand) on the connector, where every skill on the AI Agent Team reads it.
+
+Then save the buildable parts as data, not just prose. If they gave real hex codes in Q2 or real font names in Q3, call `save_brand_kit` with them so Brooke can build files that use the exact colors instead of guessing at "warm sage." If they only described colors ("a muted green, a warm cream"), say so plainly and ask if they want you to propose hex codes they can adjust later.
+
+On Q8, if they have a logo, tell them where it goes: https://aiagents.porchlyte.com/dashboard/brand-kit takes the file itself, and once it's there Brooke puts it on everything she makes. You can't upload it for them from here.
 
 Now, when you give brand guidance, here's how to do it.
 

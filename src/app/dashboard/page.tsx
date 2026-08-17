@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getPortalContext } from "@/lib/porchlyte/portal-auth";
-import { getSetupStatus } from "@/lib/porchlyte/operations";
+import { getBrandKitStatus, getSetupStatus } from "@/lib/porchlyte/operations";
 import {
   AGENT_ORDER,
   AGENTS,
@@ -22,12 +22,20 @@ const TEAM_STATUS_LABEL: Record<string, string> = {
   partial: "In progress",
   not_hired: "Not hired",
 };
+const BRAND_KIT_STATUS_LABEL: Record<string, string> = {
+  complete: "Logos, colors, and fonts saved",
+  partial: "Started — add the rest",
+  empty: "Upload your logo and colors",
+};
 
 export default async function HubHome() {
   const ctx = await getPortalContext();
   if (!ctx) redirect("/");
 
-  const setup = await getSetupStatus(ctx.db, ctx.memberId);
+  const [setup, brandKitStatus] = await Promise.all([
+    getSetupStatus(ctx.db, ctx.memberId),
+    getBrandKitStatus(ctx.db, ctx.memberId),
+  ]);
   const { data: connector } = await ctx.db
     .from("connector_status")
     .select("*")
@@ -69,6 +77,16 @@ export default async function HubHome() {
             </Link>
           );
         })}
+        <Link href="/dashboard/brand-kit" className="pl-tile">
+          <div className="pl-tile-head">
+            <span className="pl-tile-name">Brand kit</span>
+            <span className={`pl-dot ${brandKitStatus}`} />
+          </div>
+          <div className="pl-tile-role">Logos, colors, fonts</div>
+          <p className="pl-tile-body" style={{ marginTop: 8 }}>
+            {BRAND_KIT_STATUS_LABEL[brandKitStatus]}
+          </p>
+        </Link>
       </div>
 
       <div className="pl-section-label">Your Agents</div>

@@ -1,5 +1,5 @@
 /**
- * The eight platform operations — the single implementation behind both doors:
+ * The platform operations — the single implementation behind both doors:
  * the MCP tools (Claude connector) and the portal REST API call these same
  * functions, so a save from a chat interview and one from the web wizard are
  * indistinguishable downstream.
@@ -25,6 +25,14 @@ import {
   type UpdatedBy,
   planIncludesTeam,
 } from "./constants";
+import {
+  ALLOWED_IMAGE_MIME,
+  type BrandAssetKind,
+  BrandKitInputError,
+  MAX_UPLOAD_BYTES,
+  extensionFor,
+  parseBrandKit,
+} from "./brand-kit";
 
 type Db = SupabaseClient<Database>;
 
@@ -37,6 +45,7 @@ export class PlatformError extends Error {
       | "membership_paused"
       | "plan_required"
       | "member_not_found"
+      | "invalid_input"
   ) {
     super(message);
     this.name = "PlatformError";
@@ -154,6 +163,226 @@ export async function saveFoundation(
 
   logUsage(db, memberId, "profile_saved", null, { kind: input.kind, updated_by: updatedBy });
   return { ok: true as const, kind: input.kind, status: input.status ?? "complete" };
+}
+
+// ---------------------------------------------------------------------------
+// Brand kit — colors, fonts, and uploaded logo files
+// ---------------------------------------------------------------------------
+
+const BRAND_BUCKET = "brand-assets";
+
+/** Portal pages re-render often; Claude may hold a URL for a whole session. */
+const SIGNED_URL_TTL = { portal: 60 * 60, connector: 60 * 60 * 24 * 7 } as const;
+
+export type BrandAssetView = {
+  id: string;
+  kind: BrandAssetKind;
+  file_name: string;
+  mime_type: string;
+  size_bytes: number;
+  updated_at: string;
+  /** Signed download URL, or null if signing failed for this object. */
+  url: string | null;
+};
+
+export async function getBrandKit(
+  db: Db,
+  memberId: string,
+  audience: keyof typeof SIGNED_URL_TTL = "portal"
+) {
+  await requireMember(db, memberId, "read");
+
+  const [kitRow, assetRows] = await Promise.all([
+    db.from("brand_kits").select("colors, fonts, notes, updated_at").eq("member_id", memberId).maybeSingle(),
+    db
+      .from("brand_assets")
+      .select("id, kind, file_name, mime_type, size_bytes, storage_path, updated_at")
+      .eq("member_id", memberId)
+      .order("kind"),
+  ]);
+  if (kitRow.error) throw kitRow.error;
+  if (assetRows.error) throw assetRows.error;
+
+  logUsage(db, memberId, "profile_read", null, { scope: "brand_kit" });
+
+  const assets: BrandAssetView[] = await Promise.all(
+    assetRows.data.map(async (row) => {
+      const { data } = await db.storage
+        .from(BRAND_BUCKET)
+        .createSignedUrl(row.storage_path, SIGNED_URL_TTL[audience]);
+      return {
+        id: row.id,
+        kind: row.kind as BrandAssetKind,
+        file_name: row.file_name,
+        mime_type: row.mime_type,
+        size_bytes: row.size_bytes,
+        updated_at: row.updated_at,
+        url: data?.signedUrl ?? null,
+      };
+    })
+  );
+
+  const kit = parseBrandKit(kitRow.data ?? {}, { lenient: true });
+  return { ...kit, updated_at: kitRow.data?.updated_at ?? null, assets };
+}
+
+/**
+ * Cheap status for the hub tile and sidebar dot — no signed URLs, which cost
+ * a storage round trip per asset.
+ */
+export async function getBrandKitStatus(
+  db: Db,
+  memberId: string
+): Promise<"empty" | "partial" | "complete"> {
+  const [kitRow, assetCount] = await Promise.all([
+    db.from("brand_kits").select("colors, fonts").eq("member_id", memberId).maybeSingle(),
+    db
+      .from("brand_assets")
+      .select("id", { count: "exact", head: true })
+      .eq("member_id", memberId),
+  ]);
+
+  const kit = parseBrandKit(kitRow.data ?? {}, { lenient: true });
+  const hasArt = (assetCount.count ?? 0) > 0;
+  const hasColors = kit.colors.length > 0;
+  const hasFonts = kit.fonts.length > 0;
+
+  if (hasArt && hasColors && hasFonts) return "complete";
+  if (hasArt || hasColors || hasFonts) return "partial";
+  return "empty";
+}
+
+export async function saveBrandKit(
+  db: Db,
+  memberId: string,
+  input: unknown,
+  updatedBy: UpdatedBy
+) {
+  await requireMember(db, memberId, "write");
+  let kit;
+  try {
+    kit = parseBrandKit(input);
+  } catch (error) {
+    if (error instanceof BrandKitInputError) {
+      throw new PlatformError(error.message, "invalid_input");
+    }
+    throw error;
+  }
+
+  const { error } = await db.from("brand_kits").upsert(
+    {
+      member_id: memberId,
+      colors: kit.colors as unknown as Json,
+      fonts: kit.fonts as unknown as Json,
+      notes: kit.notes || null,
+      updated_by: updatedBy,
+    },
+    { onConflict: "member_id" }
+  );
+  if (error) throw error;
+
+  logUsage(db, memberId, "brand_kit_saved", null, {
+    colors: kit.colors.length,
+    fonts: kit.fonts.length,
+    updated_by: updatedBy,
+  });
+  return { ok: true as const, ...kit };
+}
+
+/**
+ * Upload one file and record it. The named slots hold a single file, so
+ * replacing one deletes the object it displaced — otherwise the bucket would
+ * fill with logos nobody can reach.
+ */
+export async function addBrandAsset(
+  db: Db,
+  memberId: string,
+  input: {
+    kind: BrandAssetKind;
+    fileName: string;
+    mimeType: string;
+    bytes: ArrayBuffer;
+  }
+) {
+  await requireMember(db, memberId, "write");
+
+  const size = input.bytes.byteLength;
+  if (size === 0) throw new PlatformError("That file is empty.", "invalid_input");
+  if (size > MAX_UPLOAD_BYTES) {
+    throw new PlatformError(
+      `Images need to be under ${MAX_UPLOAD_BYTES / (1024 * 1024)}MB. Try exporting it smaller.`,
+      "invalid_input"
+    );
+  }
+  if (!(ALLOWED_IMAGE_MIME as readonly string[]).includes(input.mimeType)) {
+    throw new PlatformError(
+      "Logos need to be a PNG, JPG, or WEBP. If yours is an SVG or PDF, export a PNG at around 2000px wide.",
+      "invalid_input"
+    );
+  }
+
+  const replacing =
+    input.kind === "other"
+      ? null
+      : (
+          await db
+            .from("brand_assets")
+            .select("id, storage_path")
+            .eq("member_id", memberId)
+            .eq("kind", input.kind)
+            .maybeSingle()
+        ).data;
+
+  // Timestamped path: a replaced logo gets a new URL instead of serving a
+  // stale cached copy of the old one.
+  const path = `${memberId}/${input.kind}-${Date.now()}.${extensionFor(input.mimeType)}`;
+  const { error: uploadError } = await db.storage
+    .from(BRAND_BUCKET)
+    .upload(path, input.bytes, { contentType: input.mimeType, upsert: false });
+  if (uploadError) throw uploadError;
+
+  const row = {
+    member_id: memberId,
+    kind: input.kind,
+    storage_path: path,
+    file_name: input.fileName.slice(0, 120),
+    mime_type: input.mimeType,
+    size_bytes: size,
+  };
+
+  const { data: saved, error: rowError } = replacing
+    ? await db.from("brand_assets").update(row).eq("id", replacing.id).select("id").maybeSingle()
+    : await db.from("brand_assets").insert(row).select("id").maybeSingle();
+
+  if (rowError) {
+    // Don't leave an orphan object behind if the row didn't land.
+    await db.storage.from(BRAND_BUCKET).remove([path]);
+    throw rowError;
+  }
+  if (replacing) await db.storage.from(BRAND_BUCKET).remove([replacing.storage_path]);
+
+  logUsage(db, memberId, "brand_asset_uploaded", null, { kind: input.kind, size_bytes: size });
+  return { ok: true as const, id: saved?.id ?? null, kind: input.kind };
+}
+
+export async function deleteBrandAsset(db: Db, memberId: string, assetId: string) {
+  await requireMember(db, memberId, "write");
+
+  const { data, error } = await db
+    .from("brand_assets")
+    .select("id, kind, storage_path")
+    .eq("member_id", memberId)
+    .eq("id", assetId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) throw new PlatformError("That asset is already gone.", "member_not_found");
+
+  const { error: deleteError } = await db.from("brand_assets").delete().eq("id", data.id);
+  if (deleteError) throw deleteError;
+  await db.storage.from(BRAND_BUCKET).remove([data.storage_path]);
+
+  logUsage(db, memberId, "brand_asset_deleted", null, { kind: data.kind });
+  return { ok: true as const };
 }
 
 // ---------------------------------------------------------------------------

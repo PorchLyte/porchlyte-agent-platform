@@ -30,8 +30,8 @@ export function errorResponse(error: unknown): Response {
     const status =
       error.code === "member_not_found"
         ? 404
-        : error.code === "plan_required"
-          ? 403
+        : error.code === "invalid_input"
+          ? 400
           : 403;
     return Response.json({ error: error.message, code: error.code }, { status });
   }

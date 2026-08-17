@@ -849,6 +849,255 @@
   color: var(--cream);
 }
 
+/* ---------- Brand kit ---------- */
+.pl-bk-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
+}
+.pl-bk-slot {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pl-bk-slot-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+.pl-bk-slot-hint {
+  font-size: 12.5px;
+  color: var(--text-soft);
+  line-height: 1.45;
+}
+
+/* Checkerboard so a transparent PNG reads as transparent, not white. */
+.pl-bk-preview {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 130px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background-color: #ffffff;
+  background-image: linear-gradient(45deg, #ececec 25%, transparent 25%),
+    linear-gradient(-45deg, #ececec 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #ececec 75%),
+    linear-gradient(-45deg, transparent 75%, #ececec 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+.pl-bk-preview.on-dark {
+  background-color: #282722;
+  background-image: linear-gradient(45deg, #35342e 25%, transparent 25%),
+    linear-gradient(-45deg, #35342e 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #35342e 75%),
+    linear-gradient(-45deg, transparent 75%, #35342e 75%);
+}
+.pl-bk-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.pl-bk-empty {
+  color: var(--icon);
+  font-size: 12.5px;
+  text-align: center;
+}
+.pl-bk-slot-meta {
+  font-size: 11.5px;
+  color: var(--icon);
+  word-break: break-all;
+}
+.pl-bk-slot-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+.pl-bk-mini {
+  padding: 6px 12px;
+  font-size: 12.5px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pl-bk-mini:hover {
+  background: var(--surface-2);
+}
+.pl-bk-mini:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.pl-bk-mini.danger {
+  color: #b4523f;
+}
+
+/* ---------- Palette rows ---------- */
+.pl-bk-row {
+  display: grid;
+  grid-template-columns: 52px 1.4fr 110px 130px 36px;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.pl-bk-row .pl-input {
+  margin-top: 0;
+  font-size: 14px;
+  padding: 9px 11px;
+}
+.pl-bk-font-row {
+  display: grid;
+  grid-template-columns: 130px 1.2fr 1.4fr 36px;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.pl-bk-swatch {
+  width: 52px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: none;
+  cursor: pointer;
+}
+.pl-bk-swatch::-webkit-color-swatch-wrapper {
+  padding: 3px;
+}
+.pl-bk-swatch::-webkit-color-swatch {
+  border: none;
+  border-radius: 2px;
+}
+.pl-bk-remove {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--icon);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+.pl-bk-remove:hover {
+  background: var(--surface-2);
+  color: #b4523f;
+}
+.pl-bk-head {
+  display: grid;
+  grid-template-columns: 52px 1.4fr 110px 130px 36px;
+  gap: 10px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--icon);
+}
+.pl-bk-head.fonts {
+  grid-template-columns: 130px 1.2fr 1.4fr 36px;
+}
+
+/* ---------- Style guide preview ---------- */
+.pl-bk-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+.pl-bk-chip {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  width: 118px;
+}
+.pl-bk-chip-fill {
+  height: 62px;
+}
+.pl-bk-chip-meta {
+  padding: 7px 9px;
+  background: var(--surface);
+}
+.pl-bk-chip-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pl-bk-chip-hex {
+  font-size: 11px;
+  color: var(--icon);
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+}
+.pl-bk-type-sample {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  margin-top: 14px;
+}
+.pl-bk-type-role {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--icon);
+}
+.pl-bk-type-name {
+  font-size: 21px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.pl-bk-type-notes {
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+/* Sticky save bar so the button is reachable from any section. */
+.pl-bk-savebar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 28px;
+  padding: 14px 0;
+  background: linear-gradient(to top, var(--bg) 72%, transparent);
+}
+.pl-bk-saved {
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+@media (max-width: 700px) {
+  .pl-bk-row,
+  .pl-bk-head,
+  .pl-bk-font-row,
+  .pl-bk-head.fonts {
+    grid-template-columns: 52px 1fr 36px;
+  }
+  .pl-bk-head,
+  .pl-bk-head.fonts {
+    display: none;
+  }
+}
+
 @media (max-width: 800px) {
   .pl-shell {
     grid-template-columns: 1fr;

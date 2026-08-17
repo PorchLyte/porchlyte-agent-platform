@@ -16,14 +16,17 @@ import {
   SCHEDULED_AGENTS,
   TEAM_AGENTS,
 } from "@/lib/porchlyte/constants";
+import { BRAND_COLOR_ROLES, BRAND_FONT_ROLES } from "@/lib/porchlyte/brand-kit";
 import {
   PlatformError,
+  getBrandKit,
   getFoundations,
   getSetupStatus,
   getTaskState,
   getTeamMember,
   logTaskRun,
   registerScheduledTask,
+  saveBrandKit,
   saveFoundation,
   savePartial,
   saveTeamMember,
@@ -115,6 +118,45 @@ const handler = createMcpHandler(
             "mcp_claude"
           )
         )
+    );
+
+    server.tool(
+      "get_brand_kit",
+      "Get the member's brand kit: exact hex colors with their roles, named fonts, usage notes, and download URLs for their real logo files and headshot. Call this before designing, laying out, or building any file — the Brand foundation prose says how the brand should feel, this says what to actually use. The asset URLs are signed and expire in a week; fetch them during the session rather than saving them for later. If colors and assets are both empty, tell them the brand kit is at https://aiagents.porchlyte.com/dashboard/brand-kit and takes a couple of minutes.",
+      {},
+      async (_args, extra) =>
+        run(extra, (db, memberId) => getBrandKit(db, memberId, "connector"))
+    );
+
+    server.tool(
+      "save_brand_kit",
+      "Save the member's colors, fonts, and usage notes when they tell you in chat (\"my brand colors are...\"). Send the full kit, not a patch — whatever you pass replaces what's stored. Colors need six-digit hex codes. Logo files can only be uploaded on the hub, so this never touches their assets.",
+      {
+        colors: z
+          .array(
+            z.object({
+              name: z.string().describe("What they call it, e.g. \"Deep Olive\""),
+              hex: z.string().describe("Six-digit hex, e.g. #3B4A2F"),
+              role: z.enum(BRAND_COLOR_ROLES).describe("What the color is for"),
+            })
+          )
+          .describe("The full palette, in order of importance"),
+        fonts: z
+          .array(
+            z.object({
+              role: z.enum(BRAND_FONT_ROLES),
+              name: z.string().describe("The font's real name, e.g. \"Canela\""),
+              notes: z.string().optional().describe("How it's set, e.g. \"All caps, wide tracking\""),
+            })
+          )
+          .optional(),
+        notes: z
+          .string()
+          .optional()
+          .describe("Logo usage rules, photography direction, what to avoid"),
+      },
+      async (args, extra) =>
+        run(extra, (db, memberId) => saveBrandKit(db, memberId, args, "mcp_claude"))
     );
 
     server.tool(

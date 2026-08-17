@@ -67,6 +67,12 @@ export function Sidebar({
               </Link>
             );
           })}
+          <Link
+            href="/dashboard/brand-kit"
+            className={`pl-subnav-item${pathname === "/dashboard/brand-kit" ? " active" : ""}`}
+          >
+            <span>Brand kit</span>
+          </Link>
         </div>
       )}
 

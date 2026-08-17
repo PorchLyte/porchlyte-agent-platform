@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { FoundationKind } from "@/lib/porchlyte/constants";
 import type { WizardQuestion } from "@/lib/porchlyte/content";
@@ -136,6 +137,7 @@ export function FoundationWizard(props: Props) {
             {content}
           </p>
         </div>
+        {kind === "brand" && <BrandKitLink />}
         <div style={{ display: "flex", gap: 12, marginTop: 18 }}>
           <button
             className="pl-btn pl-btn-ghost"
@@ -234,6 +236,22 @@ export function FoundationWizard(props: Props) {
               : "Next"}
         </button>
       </div>
+    </div>
+  );
+}
+
+/** Brand only: the prose profile and the buildable assets are two halves. */
+function BrandKitLink() {
+  return (
+    <div className="pl-card">
+      <div className="pl-card-title">Brand kit</div>
+      <p className="pl-card-body" style={{ marginTop: 6 }}>
+        This profile covers how your brand should feel. The brand kit holds what
+        your agents build with: your logo files, exact hex codes, and fonts.
+      </p>
+      <Link href="/dashboard/brand-kit" className="pl-btn pl-btn-ghost" style={{ marginTop: 14 }}>
+        Open your brand kit
+      </Link>
     </div>
   );
 }

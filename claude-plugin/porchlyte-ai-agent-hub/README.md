@@ -35,6 +35,10 @@ Either way, confirm the **porchlyte** MCP server is connected (OAuth to aiagents
 
 ## Version
 
+2.2.0 — brand kit. Upload your logo, headshot, and exact colors and fonts at
+https://aiagents.porchlyte.com/dashboard/brand-kit, and Brooke builds with the
+real files instead of describing what you should add later.
+
 2.1.0 — Brooke joins the team as the brand designer. Hand her content from any
 other agent and she reads your Brand foundation, tightens the copy, and builds
 the finished file: PDF, deck, carousel frames, plus Canva rebuild notes.
