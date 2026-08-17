@@ -17,6 +17,7 @@ export const TEAM_AGENTS = [
   "sloane",
   "rhonda",
   "olivia",
+  "brooke",
 ] as const;
 export type TeamAgent = (typeof TEAM_AGENTS)[number];
 
@@ -27,7 +28,7 @@ export type MemberPlan = "foundations" | "team" | "trifecta" | "full";
 export type MemberStatus = "active" | "paused" | "canceled";
 export type UpdatedBy = "portal_wizard" | "mcp_claude" | "admin";
 
-/** Plans that unlock the nine team hires. */
+/** Plans that unlock the ten team hires. */
 export function planIncludesTeam(plan: string): boolean {
   return plan === "team" || plan === "full";
 }

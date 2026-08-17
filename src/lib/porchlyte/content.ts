@@ -324,6 +324,34 @@ export const AGENTS: Record<TeamAgent, AgentContent> = {
       { title: "Role-play", text: "Olivia, role-play a buyer who wants to lowball, and let me practice my response." },
     ],
   },
+  brooke: {
+    agent: "brooke",
+    name: "Brooke",
+    role: "Brand designer",
+    scheduled: false,
+    purpose: "Turns content into marketing — flyers, feature sheets, lead magnets, client guides, carousels, and presentations, built as finished files in your brand.",
+    intro:
+      "Most agents don't need graphics, they need marketing that makes them look like the agent they're trying to become. The content is already sitting in a doc nobody will read, because it looks like a doc. Brooke reads your Brand foundation, sharpens the copy, and hands back the actual file — a PDF, a deck, a set of carousel frames — plus the notes to rebuild it in Canva later.",
+    waysToUse: [
+      "Turn a checklist, guide, or market report into a designed PDF lead magnet",
+      "Build a listing feature sheet or open house package from Lia's content",
+      "Get a carousel or social graphic set laid out frame by frame",
+      "Hand over any rough doc and ask what it should look like",
+    ],
+    tips: [
+      "Brooke reads your Brand foundation first — fill that in before you ask for anything designed.",
+      "She improves the copy before she designs it, and shows you what she changed.",
+      "Every asset comes with three complementary pieces she can build from the same content. Ask for them.",
+    ],
+    prompts: [
+      {
+        title: "Lead magnet (full)",
+        text: "Brooke, here's the content: [paste]. Turn it into a lead magnet people would actually download. Use my Brand foundation for the colors, fonts, and feel. Tighten the copy first and show me what you changed, then build the finished PDF. When it's done, tell me the three other pieces you could make from this same content and what each one is for.",
+      },
+      { title: "Feature sheet", text: "Brooke, turn this listing into a one-page feature sheet I can print and hand out at the open house." },
+      { title: "Make it on-brand", text: "Brooke, here's a doc I wrote. Lay it out in my brand and give me the Canva rebuild notes." },
+    ],
+  },
 };
 
 export const AGENT_ORDER: TeamAgent[] = [
@@ -336,6 +364,7 @@ export const AGENT_ORDER: TeamAgent[] = [
   "sloane",
   "rhonda",
   "olivia",
+  "brooke",
 ];
 
 export const FOUNDATION_ORDER: FoundationKind[] = ["voice", "brand", "local"];

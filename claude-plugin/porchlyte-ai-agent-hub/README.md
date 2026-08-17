@@ -1,6 +1,6 @@
 # PorchLyte AI Agent Hub (Claude plugin)
 
-One plugin: Voice, Brand, Local + the nine-agent team, wired to your PorchLyte account.
+One plugin: Voice, Brand, Local + the ten-agent team, wired to your PorchLyte account.
 
 ## Connector URL (custom connector)
 
@@ -34,6 +34,10 @@ Either way, confirm the **porchlyte** MCP server is connected (OAuth to aiagents
 - New work: skills call `get_foundations` / `get_team_member` / `save_*` on the connector.
 
 ## Version
+
+2.1.0 — Brooke joins the team as the brand designer. Hand her content from any
+other agent and she reads your Brand foundation, tightens the copy, and builds
+the finished file: PDF, deck, carousel frames, plus Canva rebuild notes.
 
 2.0.2 — skills now recognize a stale connector tool list and ask you to refresh
 it, instead of reporting the feature as unsupported.

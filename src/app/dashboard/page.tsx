@@ -92,7 +92,7 @@ export default async function HubHome() {
       </div>
       {!teamUnlocked && (
         <div className="pl-diag" style={{ marginTop: 14 }}>
-          Your plan covers Foundations. Upgrade to unlock the full nine-agent
+          Your plan covers Foundations. Upgrade to unlock the full ten-agent
           team.
         </div>
       )}

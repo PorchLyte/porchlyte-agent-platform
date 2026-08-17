@@ -153,7 +153,7 @@ const handler = createMcpHandler(
 
     server.tool(
       "get_setup_status",
-      "Get the member's full setup summary: plan, membership status, all three Foundations, and all nine team hires with their statuses. Powers resume logic — call this to decide what setup to offer next.",
+      "Get the member's full setup summary: plan, membership status, all three Foundations, and all ten team hires with their statuses. Powers resume logic — call this to decide what setup to offer next.",
       {},
       async (_args, extra) => run(extra, (db, memberId) => getSetupStatus(db, memberId))
     );

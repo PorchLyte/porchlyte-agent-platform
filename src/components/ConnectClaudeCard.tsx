@@ -55,7 +55,7 @@ export function ConnectClaudeCard({
         </li>
         <li>
           Install the plugin (v{PLUGIN_VERSION}) so Voice, Brand, Local, and
-          the nine agents use your account — two ways, pick either:
+          the ten agents use your account — two ways, pick either:
           <div style={{ marginTop: 10 }}>
             <div className="pl-connect-url-row">
               <code className="pl-connect-url">{PLUGIN_MARKETPLACE_REPO}</code>
