@@ -27,7 +27,11 @@ export function Sidebar({
   const pathname = usePathname();
   const router = useRouter();
 
-  const [foundOpen, setFoundOpen] = useState(pathname.includes("/foundations"));
+  // Brand kit lives in this group but not under /foundations, so it needs
+  // naming here too or the group collapses while you are standing on it.
+  const [foundOpen, setFoundOpen] = useState(
+    pathname.includes("/foundations") || pathname.startsWith("/dashboard/brand-kit")
+  );
   const [agentsOpen, setAgentsOpen] = useState(pathname.includes("/agents"));
   const [resourcesOpen, setResourcesOpen] = useState(
     pathname.startsWith("/dashboard/resources")
