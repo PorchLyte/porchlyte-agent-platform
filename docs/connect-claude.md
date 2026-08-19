@@ -78,5 +78,6 @@ marketplace, so the plugin lives in its own public repo.
 
 - Source: `public/connect-and-migrate.html` — served statically, no auth, safe to link directly
 - Live: `https://aiagents.porchlyte.com/connect-and-migrate.html`
-- Covers: connect the connector, install the new plugin, run `/migrate` in the old chat/project, delete the old `porchlyte-foundations` / `porchlyte-agents` marketplaces (they're frozen by the Cowork plugin-cache bug and never update)
+- Written for fresh members (no upgrade/migration framing). Covers: sign in to the hub, add the connector, install the plugin, set up Foundations + brand kit
+- The old cohort's `/migrate` flow is no longer on this page; it stays available as the plugin's `/migrate` command
 - Edit directly and redeploy — no build step
