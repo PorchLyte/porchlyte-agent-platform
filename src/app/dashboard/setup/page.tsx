@@ -32,7 +32,9 @@ export default async function SetupInstructionsPage() {
         </p>
       </div>
 
-      <div className="pl-section-label">2. Connect Claude</div>
+      <div className="pl-section-label">
+        2. Connect Claude — the connector AND the plugin
+      </div>
       <ConnectClaudeCard
         linked={!!connector?.connector_linked_at}
         lastSync={connector?.last_successful_sync_at ?? null}
