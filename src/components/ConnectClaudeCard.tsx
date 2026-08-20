@@ -38,13 +38,11 @@ export function ConnectClaudeCard({
         </p>
 
         <ol className="pl-connect-steps">
+          <li>Open Claude and go to <strong>Settings</strong></li>
+          <li>Click <strong>Connectors</strong></li>
+          <li>Click <strong>Add custom connector</strong></li>
           <li>
-            In Claude / Cowork open <strong>Settings → Connectors → Add custom
-            connector</strong>.
-          </li>
-          <li>
-            Paste this URL, then click Connect and sign in with your PorchLyte
-            membership email:
+            Paste this URL:
             <div className="pl-connect-url-row">
               <code className="pl-connect-url">{MCP_CONNECTOR_URL}</code>
               <button
@@ -57,10 +55,13 @@ export function ConnectClaudeCard({
             </div>
           </li>
           <li>
+            Click <strong>Connect</strong>, then sign in with your PorchLyte
+            membership email
+          </li>
+          <li>
             When the <strong>Tool permissions</strong> list appears, change{" "}
             <strong>Other tools</strong> from &ldquo;Needs approval&rdquo; to{" "}
-            <strong>Always allow</strong> so nothing interrupts your
-            interviews.
+            <strong>Always allow</strong>
           </li>
         </ol>
       </div>
@@ -72,15 +73,17 @@ export function ConnectClaudeCard({
         <p className="pl-card-body" style={{ marginBottom: 14 }}>
           The connector alone isn&apos;t enough — the plugin is what gives
           Claude your team&apos;s skills: Voice, Brand, Local, and all ten
-          agents (v{PLUGIN_VERSION}). Two ways to install, pick either:
+          agents (v{PLUGIN_VERSION}).
         </p>
 
         <ol className="pl-connect-steps">
+          <li>In Claude, click <strong>Customize</strong></li>
+          <li>Click <strong>Plugins</strong></li>
           <li>
-            <strong>Marketplace (recommended):</strong> in Claude go to{" "}
-            <strong>Customize → Plugins → Add → Add marketplace</strong>, paste
-            this, sync, then install <strong>porchlyte-ai-agent-hub</strong>.
-            Updates later are one click.
+            Click <strong>Add</strong>, then <strong>Add marketplace</strong>
+          </li>
+          <li>
+            Paste this:
             <div className="pl-connect-url-row">
               <code className="pl-connect-url">{PLUGIN_MARKETPLACE_REPO}</code>
               <button
@@ -93,21 +96,18 @@ export function ConnectClaudeCard({
             </div>
           </li>
           <li>
-            <strong>Zip (fallback):</strong> if the marketplace ever seems
-            stuck, download the plugin and install it from file instead.
-            <div style={{ marginTop: 8 }}>
-              <a
-                className="pl-btn pl-btn-primary"
-                href={PLUGIN_ZIP_PATH}
-                download
-                style={{ display: "inline-flex" }}
-              >
-                Download plugin (.zip)
-              </a>
-            </div>
+            Sync, then install <strong>porchlyte-ai-agent-hub</strong>
           </li>
         </ol>
       </div>
+
+      <p className="pl-field-hint" style={{ marginTop: 10 }}>
+        Having trouble installing the plugin? You can{" "}
+        <a href={PLUGIN_ZIP_PATH} download style={{ textDecoration: "underline" }}>
+          download the zip file version
+        </a>{" "}
+        and install it from file instead.
+      </p>
     </>
   );
 }
